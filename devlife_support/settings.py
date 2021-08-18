@@ -32,8 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'core',
-    'student_dashboard',
-    'admin_dashboard',
+    'frontend',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,7 +59,7 @@ ROOT_URLCONF = 'devlife_support.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['student_dashboard/', 'admin_dashboard/'],
+        'DIRS': ['frontend/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,6 +121,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '.static'
 STATICFILES_DIRS = [
-    'student_dashboard/student-frontend-dev/build/',
-    'admin_dashboard/admin-frontend-dev/build/',
+    'frontend/frontend-dev/build/',
 ]

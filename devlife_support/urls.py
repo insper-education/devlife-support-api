@@ -21,6 +21,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('dj_rest_auth.urls')),
     path('api/', include('core.urls')),
-    path('student/', include('student_dashboard.urls')),
-    path('faculty/', include('admin_dashboard.urls')),
+    path('', include('frontend.urls')),
 ]

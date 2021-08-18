@@ -1,6 +1,6 @@
-# Student Dashboard
+# Frontend
 
-If you don't want to change anything in the student dashboard, Django will serve the last build. You only need to follow the steps in this file if you are working on the front end code.
+If you don't want to change anything in the frontend, Django will serve the last build. You only need to follow the steps in this file if you are working on the front end code.
 
 ## Available Scripts
 
