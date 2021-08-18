@@ -1,4 +1,4 @@
-# Dessoft Server
+# Developer Life Support API
 
 ## API Documentation
 
@@ -11,5 +11,9 @@ Currently available:
   - `/auth/logout/`
   - `/auth/user/`
   - `/auth/password/change/`
-- `/users/`
-  - `/users/{ID}/`
+- `/api/users/`
+  - `/api/users/{ID}/`
+
+## References
+
+- Django + React: https://medium.com/@meric.emmanuel/how-to-connect-django-with-create-react-app-d1581139cad1

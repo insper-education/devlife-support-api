@@ -1,4 +1,4 @@
-"""dessoft_server URL Configuration
+"""devlife_support URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -20,5 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('auth/', include('dj_rest_auth.urls')),
-    path('', include('core.urls'))
+    path('api/', include('core.urls')),
+    path('student/', include('student_dashboard.urls')),
+    path('faculty/', include('admin_dashboard.urls')),
 ]
