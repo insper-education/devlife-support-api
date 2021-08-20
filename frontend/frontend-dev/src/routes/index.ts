@@ -1,9 +1,11 @@
-import AdminHome from "../screens/AdminHome";
+import InstructorHome from "../screens/InstructorHome";
+import Login from "../screens/Login";
 import StudentHome from "../screens/StudentHome";
 
 export enum routes {
   STUDENT_HOME = "/",
-  ADMIN_HOME = "/faculty",
+  INSTRUCTOR_HOME = "/instructor",
+  LOGIN = "/login",
 }
 
 export const routeProps = [
@@ -13,13 +15,18 @@ export const routeProps = [
     component: StudentHome,
   },
   {
-    path: routes.ADMIN_HOME,
+    path: routes.INSTRUCTOR_HOME,
     exact: true,
-    component: AdminHome,
+    component: InstructorHome,
+  },
+  {
+    path: routes.LOGIN,
+    exact: true,
+    component: Login,
   },
 ];
 
 export const routeNames = {
   [routes.STUDENT_HOME]: "Student Dashboard",
-  [routes.ADMIN_HOME]: "Admin Dashboard",
+  [routes.INSTRUCTOR_HOME]: "Instructor Dashboard",
 };
