@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import LoginRedirect from "./components/LoginRedirect";
+import LoginRedirect from "./components/Redirect/LoginRedirect";
 import Contexts from "./contexts";
 
 import { routesData } from "./routes";

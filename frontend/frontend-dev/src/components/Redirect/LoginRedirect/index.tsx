@@ -1,7 +1,7 @@
 import React from "react";
 import { Redirect, useLocation } from "react-router";
-import { useUser } from "../../contexts/user-context";
-import { routes } from "../../routes";
+import { useUser } from "../../../contexts/user-context";
+import { routes } from "../../../routes";
 
 const LoginRedirect = () => {
   const { user } = useUser();

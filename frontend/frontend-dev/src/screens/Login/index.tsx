@@ -82,6 +82,9 @@ const Login = () => {
           {invalidLogin && (
             <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
           )}
+          {!!params.get("reason") && (
+            <ErrorMessage>{t(params.get("reason") || "")}</ErrorMessage>
+          )}
           <Button className="mt-2 w-full" type="submit" disabled={loading}>
             {t("Sign in")}
           </Button>

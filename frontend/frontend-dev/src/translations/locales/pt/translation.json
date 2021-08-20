@@ -8,5 +8,6 @@
   "username is a required field": "Campo obrigatório",
   "password is a required field": "Campo obrigatório",
   "Invalid credentials": "Usuário ou senha inválidos",
-  "Logout": "Sair"
+  "Logout": "Sair",
+  "not-admin": "Você não tem permissão para acessar esta página. Por favor, entre com um usuário autorizado."
 }

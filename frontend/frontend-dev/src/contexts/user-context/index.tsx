@@ -21,7 +21,7 @@ export const UserContext = createContext<UserContextType>({
 });
 
 const UserProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(retrieveUser());
 
   const logUserIn = (user: User) => {
     storeUser(user);
