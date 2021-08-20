@@ -11,6 +11,11 @@ module.exports = {
           DEFAULT: "#27A5A2",
           light: "#3CBFAE",
         },
+        secondary: {
+          dark: "#F15A22",
+          DEFAULT: "#F58220",
+          light: "#FAA61A",
+        },
         transparent: {
           dark: "rgba(0, 0, 0, 0.1)",
           DEFAULT: "transparent",

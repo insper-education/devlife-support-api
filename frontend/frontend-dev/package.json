@@ -29,7 +29,9 @@
   "scripts": {
     "start": "PUBLIC_URL='/static' craco start",
     "build": "PUBLIC_URL='/static' craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "browserslist": {
     "production": [
@@ -45,9 +47,33 @@
   },
   "proxy": "http://localhost:8000",
   "devDependencies": {
+    "@storybook/addon-actions": "^6.3.7",
+    "@storybook/addon-essentials": "^6.3.7",
+    "@storybook/addon-info": "^5.3.21",
+    "@storybook/addon-knobs": "^6.3.0",
+    "@storybook/addon-links": "^6.3.7",
+    "@storybook/addon-notes": "^5.3.21",
+    "@storybook/addons": "^6.3.7",
+    "@storybook/node-logger": "^6.3.7",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.7",
     "@types/react-router-dom": "^5.1.8",
     "autoprefixer": "^9.8.6",
+    "babel-loader": "^8.2.2",
     "postcss": "^7.0.36",
+    "react-docgen-typescript-loader": "^3.7.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7"
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
   }
 }
