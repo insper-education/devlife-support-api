@@ -6,11 +6,11 @@ export const login = (
   password: string,
 ): Promise<User | null> => {
   return axios
-    .post("/auth/login/", { username, password })
+    .post("/api/auth/login/", { username, password })
     .then((res) => res.data.key)
     .then((token) => {
       return axios
-        .get("/auth/user/", {
+        .get("/api/auth/user/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -23,6 +23,7 @@ export const login = (
             email: userData.email,
             firstName: userData.first_name,
             lastName: userData.last_name,
+            isStaff: userData.is_staff,
             token,
           };
         })

@@ -9,12 +9,16 @@ import { login } from "../../services/auth";
 import { useUser } from "../../contexts/user-context";
 import ErrorMessage from "../../components/Form/ErrorMessage";
 import { useHistory } from "react-router";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import useQuery from "../../hooks/useQuery";
 
 const Login = () => {
   const [invalidLogin, setInvalidLogin] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   const { putUser } = useUser();
   const history = useHistory();
+  const params = useQuery();
 
   const {
     register,
@@ -25,13 +29,16 @@ const Login = () => {
   });
 
   const onSubmit = (data: LoginInputs) => {
-    login(data.username, data.password).then((user) => {
-      if (!user) setInvalidLogin(true);
-      else {
-        putUser(user);
-        history.replace("/");
-      }
-    });
+    setLoading(true);
+    login(data.username, data.password)
+      .then((user) => {
+        if (!user) setInvalidLogin(true);
+        else {
+          putUser(user);
+          history.replace(params.get("next") || "/");
+        }
+      })
+      .finally(() => setLoading(false));
   };
 
   const { onChange: onUsernameChange, ...usernameInputProps } =
@@ -49,9 +56,9 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full px-2">
+    <div className="w-full min-h-screen px-2 flex flex-col justify-center">
       <div className="max-w-xs mx-auto rounded shadow">
-        <h1 className="text-xl uppercase px-4 py-4 bg-primary text-white rounded-t text-center">
+        <h1 className="text-3xl uppercase px-6 py-4 bg-primary text-white rounded-t text-center">
           {t("Developer Life")}
         </h1>
         <Form className="px-4 py-4" onSubmit={handleSubmit(onSubmit)}>
@@ -75,9 +82,14 @@ const Login = () => {
           {invalidLogin && (
             <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
           )}
-          <Button className="mt-2" type="submit">
+          <Button className="mt-2 w-full" type="submit" disabled={loading}>
             {t("Sign in")}
           </Button>
+          {loading && (
+            <div className="w-full flex justify-center">
+              <LoadingIndicator className="text-xs" />
+            </div>
+          )}
         </Form>
       </div>
     </div>
