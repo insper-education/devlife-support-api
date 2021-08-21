@@ -18,11 +18,18 @@ const TextInput = forwardRef<
   HTMLInputElement,
   TextInputProps & HTMLProps<HTMLInputElement>
 >((props, ref) => {
-  const { error, label, placeholder, inputId, name, type, ...otherProps } =
-    props;
+  const {
+    error,
+    label,
+    placeholder,
+    inputId,
+    name,
+    type,
+    ...otherProps
+  } = props;
   return (
     <div className="mb-4">
-      {label && <Label>{label}</Label>}
+      {label && <Label htmlFor={inputId}>{label}</Label>}
       <input
         className={`appearance-none border ${
           error ? "border-red-500" : "border-gray-300"

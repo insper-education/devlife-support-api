@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import LoginRedirect from "./components/Redirect/LoginRedirect";
 import Contexts from "./contexts";
 
@@ -10,16 +10,14 @@ function App() {
   return (
     <Contexts>
       <div className="App">
-        <Router>
-          <LoginRedirect />
-          <div>
-            <Switch>
-              {Object.entries(routesData).map(([uri, { props }], idx) => (
-                <Route key={`route__${idx}`} {...props} />
-              ))}
-            </Switch>
-          </div>
-        </Router>
+        <LoginRedirect />
+        <div>
+          <Switch>
+            {Object.entries(routesData).map(([uri, { props }], idx) => (
+              <Route key={`route__${idx}`} {...props} />
+            ))}
+          </Switch>
+        </div>
       </div>
     </Contexts>
   );

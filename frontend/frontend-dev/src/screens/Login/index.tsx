@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Form from "../../components/Form";
@@ -13,6 +13,12 @@ import LoadingIndicator from "../../components/LoadingIndicator";
 import useQuery from "../../hooks/useQuery";
 
 const Login = () => {
+  const unmounted = useRef(false);
+  useEffect(() => {
+    return () => {
+      unmounted.current = true;
+    };
+  }, []);
   const [invalidLogin, setInvalidLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
@@ -32,24 +38,27 @@ const Login = () => {
     setLoading(true);
     login(data.username, data.password)
       .then((user) => {
+        if (unmounted.current) return;
         if (!user) setInvalidLogin(true);
         else {
           putUser(user);
           history.replace(params.get("next") || "/");
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => !unmounted.current && setLoading(false));
   };
 
-  const { onChange: onUsernameChange, ...usernameInputProps } =
-    register("username");
+  const { onChange: onUsernameChange, ...usernameInputProps } = register(
+    "username",
+  );
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInvalidLogin(false);
     onUsernameChange(e);
   };
 
-  const { onChange: onPasswordChange, ...passwordInputProps } =
-    register("password");
+  const { onChange: onPasswordChange, ...passwordInputProps } = register(
+    "password",
+  );
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInvalidLogin(false);
     onPasswordChange(e);

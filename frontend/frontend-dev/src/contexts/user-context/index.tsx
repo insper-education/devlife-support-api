@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useContext,
   useEffect,
+  ReactNode,
 } from "react";
 import { User } from "../../models/User";
 import { retrieveUser, storeUser } from "../../services/auth";
@@ -20,7 +21,7 @@ export const UserContext = createContext<UserContextType>({
   removeUser: () => {},
 });
 
-const UserProvider: React.FC = ({ children }) => {
+const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(retrieveUser());
 
   const logUserIn = (user: User) => {
