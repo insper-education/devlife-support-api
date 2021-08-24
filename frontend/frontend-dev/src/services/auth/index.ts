@@ -1,16 +1,17 @@
 import axios from "axios";
 import { User } from "../../models/User";
+import { LOGIN_PATH, USER_DATA_PATH } from "../routes";
 
 export const login = (
   username: string,
   password: string,
 ): Promise<User | null> => {
   return axios
-    .post("/api/auth/login/", { username, password })
+    .post(LOGIN_PATH, { username, password })
     .then((res) => res.data.key)
     .then((token) => {
       return axios
-        .get("/api/auth/user/", {
+        .get(USER_DATA_PATH, {
           headers: {
             Authorization: `Token ${token}`,
           },

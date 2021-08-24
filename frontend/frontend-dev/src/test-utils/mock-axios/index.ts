@@ -1,46 +1,106 @@
 import axios from "axios";
+import { LOGIN_PATH, USER_DATA_PATH } from "../../services/routes";
 jest.mock("axios");
 
 const mockAxios = axios as jest.Mocked<typeof axios>;
 
-export const setupMockAxios = () => {
-    const adminUser = {
+interface UserServerData {
+  data: {
+    pk: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    is_staff: boolean;
+  };
+  token: string;
+}
+
+export const createAdminUserServerData = (): UserServerData => {
+  return {
+    data: {
       pk: 1,
       username: "admin",
       email: "admin@admin.com",
       first_name: "Admin",
       last_name: "User",
       is_staff: true,
-    };
-    const adminToken = "ADMINUSERTOKENFROMSERVER";
-    const studentUser = {
-      pk: 1,
+    },
+    token: "ADMINUSERTOKENFROMSERVER",
+  };
+};
+
+export const createStudentUserServerData = (): UserServerData => {
+  return {
+    data: {
+      pk: 2,
       username: "student",
       email: "student@student.com",
       first_name: "Student",
       last_name: "User",
       is_staff: false,
-    };
-    const studentToken = "STUDENTUSERTOKENFROMSERVER";
-  
-    mockAxios.post.mockImplementation((url, { username, password }) => {
-      if (url.indexOf("/api/auth/login/") < 0) return Promise.resolve(null);
-      if (username === "admin" && password === username)
-        return Promise.resolve({ data: { key: adminToken } });
-      if (username === "student" && password === username)
-        return Promise.resolve({ data: { key: studentToken } });
-      return Promise.resolve(null);
-    });
-    mockAxios.get.mockImplementation((url, config) => {
-      if (url.indexOf("/api/auth/user/") < 0) return Promise.resolve(null);
-      if (config?.headers?.Authorization === `Token ${adminToken}`)
-        return Promise.resolve({
-          data: adminUser,
-        });
-      if (config?.headers?.Authorization === `Token ${studentToken}`)
-        return Promise.resolve({
-          data: studentUser,
-        });
-      return Promise.resolve(null);
-    });
+    },
+    token: "STUDENTUSERTOKENFROMSERVER",
   };
+};
+
+export const hasCredentials = (username: string, password: string) => (data: {
+  username: string;
+  password: string;
+}) => data.username === username && data.password === password;
+
+export const authorizedToken = (token: string) => (config: {
+  headers?: { Authorization?: string };
+}) => config?.headers?.Authorization === `Token ${token}`;
+
+export const NOT_FOUND = { status: 404, msg: "404 - NOT FOUND" };
+export const BAD_REQUEST = { status: 400, msg: "400 - BAD REQUEST" };
+
+interface ArgsResponse {
+  accept: (args: any) => boolean;
+  response: any;
+}
+
+export const setupMockAxios = () => {
+  const pathArgs: {
+    [method: string]: { [path: string]: Array<ArgsResponse> };
+  } = {
+    post: {},
+    get: {},
+  };
+
+  const requestMock = (
+    method: string,
+  ): ((url: string, data?: any) => Promise<unknown>) => (
+    url: string,
+    data?: any,
+  ): Promise<unknown> => {
+    const argsResponses = pathArgs[method][url];
+    if (!argsResponses) return Promise.reject(NOT_FOUND);
+
+    for (let argsResponse of argsResponses) {
+      if (argsResponse.accept(data)) {
+        return Promise.resolve({ data: argsResponse.response });
+      }
+    }
+
+    return Promise.reject(BAD_REQUEST);
+  };
+
+  const mockAddPathArgs = (method: string, url: string) => ({
+    acceptIf: (acceptFunction: (args: any) => boolean) => ({
+      andReturn: (response: any) => {
+        if (!pathArgs[method][url]) pathArgs[method][url] = [];
+        pathArgs[method][url].push({ accept: acceptFunction, response });
+      },
+    }),
+  });
+
+  mockAxios.post.mockImplementation(requestMock("post"));
+  mockAxios.get.mockImplementation(requestMock("get"));
+
+  return {
+    whenPostReceivedOn: (url: string) => mockAddPathArgs("post", url),
+    whenGetReceivedOn: (url: string) => mockAddPathArgs("get", url),
+  };
+};
