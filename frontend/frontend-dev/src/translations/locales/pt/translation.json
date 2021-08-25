@@ -1,0 +1,13 @@
+{
+  "Username": "Usuário",
+  "Password": "Senha",
+  "Type username": "Digite o nome de usuário",
+  "Student Dashboard": "Dashboard do Aluno",
+  "Instructor Dashboard": "Dashboard do Professor",
+  "Sign in": "Entrar",
+  "username is a required field": "Campo obrigatório",
+  "password is a required field": "Campo obrigatório",
+  "Invalid credentials": "Usuário ou senha inválidos",
+  "Logout": "Sair",
+  "not-admin": "Você não tem permissão para acessar esta página. Por favor, entre com um usuário autorizado."
+}

@@ -1,9 +1,20 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import Container from "../../components/Container";
+import Title from "../../components/Title";
+import { useUser } from "../../contexts/user-context";
+import Header from "../../fragments/Header";
 
 const StudentHome = () => {
+  const { t } = useTranslation();
+  const { user } = useUser();
   return (
     <>
-      <h1>Student Dashboard</h1>
+      <Header />
+      <Container>
+        <Title>{t("Student Dashboard")}</Title>
+        {user?.firstName} {user?.isStaff ? "STAFF" : "NOT STAFF"}
+      </Container>
     </>
   );
 };

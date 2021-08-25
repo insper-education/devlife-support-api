@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/build
+# Needs to be added to git because we use it from Django
+# /build
 
 # misc
 .DS_Store

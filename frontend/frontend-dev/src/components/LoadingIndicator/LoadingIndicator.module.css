@@ -1,0 +1,25 @@
+.animationContainer {
+  padding-top: 1.5em;
+}
+
+.loadingDot {
+  display: block;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+}
+
+.dark {
+  background-color: #3c3c3c;
+}
+
+.light {
+  background-color: white;
+}
+
+.dotContainer {
+  width: 3em;
+  height: 1.5em;
+  display: flex;
+  justify-content: space-around;
+}
