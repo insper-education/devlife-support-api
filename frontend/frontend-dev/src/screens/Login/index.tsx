@@ -22,9 +22,19 @@ const Login = () => {
   const [invalidLogin, setInvalidLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
-  const { putUser } = useUser();
+  const { user, putUser } = useUser();
   const history = useHistory();
   const params = useQuery();
+  let redirectTo = params.get("redirectTo");
+
+  useEffect(() => {
+    if (user && redirectTo) {
+      redirectTo += `${redirectTo.indexOf("?") >= 0 ? ";" : "?"}token=${
+        user.token
+      }`;
+      window.location.href = redirectTo;
+    }
+  }, [user, redirectTo]);
 
   const {
     register,
@@ -42,7 +52,9 @@ const Login = () => {
         if (!user) setInvalidLogin(true);
         else {
           putUser(user);
-          history.replace(params.get("next") || "/");
+          if (!redirectTo) {
+            history.replace(params.get("next") || "/");
+          }
         }
       })
       .finally(() => !unmounted.current && setLoading(false));
