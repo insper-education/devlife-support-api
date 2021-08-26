@@ -8,6 +8,7 @@ router.register(r'users', views.UserViewSet)
 urlpatterns = [ 
     path(r'offerings/<int:off_pk>/exercises/', views.ExerciseViewSet.as_view({'post': 'create',
                                                                                 'get': 'list'})),
-    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/', views.ExerciseViewSet.as_view({'post': 'answer'})),
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/', views.ExerciseViewSet.as_view({'post': 'send_answer',
+                                                                                                     'get': 'list_answers'})),
     path('', include(router.urls)),
 ]

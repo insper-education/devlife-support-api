@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
 
-from .models import Offering, User, Exercise
+from .models import Answer, Offering, User, Exercise
 from .serializers import AnswerSerializer, UserSerializer, ExerciseSerializer
 from .permissions import IsAdminOrSelf, IsAdminUser
 
@@ -40,12 +40,9 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
         return Response(exercises_json.data)
 
     @action(detail=False, methods=['POST'])
-    def answer(self, request, off_pk=None, ex_slug=None):
-        print(off_pk, ex_slug)
+    def send_answer(self, request, off_pk=None, ex_slug=None):
         offering = get_object_or_404(Offering, pk=off_pk)
-        print(offering)
         exercise = get_object_or_404(Exercise, slug=ex_slug)
-        print(exercise)
 
         answer_data = {
             'user': request.user.pk,
@@ -54,10 +51,20 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
             'long_answer': request.data['long_answer'],
             'points': request.data['points']
         }
-        print(answer_data)
+    
         answer = AnswerSerializer(data=answer_data)
         if answer.is_valid():
             answer.save()
             return Response(answer.data, status=status.HTTP_201_CREATED)
-        print(answer.errors)
+    
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'])
+    def list_answers(self, request, off_pk, ex_slug):
+        offering = get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+        
+        all_answers = Answer.objects.filter(exercise=exercise)
+        all_answers_json = AnswerSerializer(all_answers, many=True)
+
+        return Response(all_answers_json.data, status=status.HTTP_200_OK)
