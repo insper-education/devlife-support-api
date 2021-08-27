@@ -1,7 +1,7 @@
 import React, { HTMLProps } from "react";
 
-const Container = ({ children }: HTMLProps<HTMLDivElement>) => {
-  return <div className="mx-4">{children}</div>;
+const Container = ({ className, children }: HTMLProps<HTMLDivElement>) => {
+  return <div className={`mx-4 ${className}`}>{children}</div>;
 };
 
 export default Container;
