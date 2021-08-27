@@ -5,50 +5,42 @@ import Button from "../../components/Button";
 import Container from "../../components/Container";
 import { useUser } from "../../contexts/user-context";
 import { Answer } from "../../models/Answer";
+import { getExerciseAnswerList } from "../../services/exercises";
 
-const ExerciseDetails = (props:any) => {
-  const [showDetails, setShowDetails] = useState<boolean>(false);
+interface ExerciseDetailsProps {
+  offering: number;
+  slug: string;
+}
+
+const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const [numSubmissions, setNumSubmissions] = useState<number>(0);
   const [lastRefresh, setLastRefresh] = useState<Date>();
   const { t } = useTranslation();
-  const { user} = useUser();
+  const { user } = useUser();
+  const token = user?.token || "";
 
-  const offering = props.offering;
-  const slug = props.slug;
-  const EXERCISE_DETAILS_URL = `/api/offerings/${offering}/exercises/${slug}/answers/`
-  
-  const handleDetails = (ev:any) => {
-    axios.get(EXERCISE_DETAILS_URL, {
-      headers: {
-        Authorization: `Token ${user?.token}`,
-      },
-    })
-    .then((res) => res.data)
-    .then((data) => {
-      console.log(data);
-      let answerList:Array<Answer> = data;
+  const handleDetails = () => {
+    getExerciseAnswerList(offering, slug, token).then((answerList) => {
       setNumSubmissions(answerList.length);
-      setLastRefresh(new Date());
-      setShowDetails(true);
     });
+    setLastRefresh(new Date());
   };
-  
+
   return (
-    <Container className="bg-gray-100 p-4 m-4 flex flex-wrap">
-      <p className="flex-grow">
-        {slug}
-      </p>
-      <Button onClick={handleDetails} className="object-right">
-        {t("Reload")}
-      </Button>
-      
-      <p className="w-full">
-        { showDetails && (
-          <p> {numSubmissions} {t("were sent before")} {lastRefresh?.toLocaleString()} </p>
+    <Container className="bg-gray-100 p-4 m-4 flex">
+      <div className="flex-grow">
+        <p> {slug} </p>
+        {!!lastRefresh && (
+          <p>
+            {" "}
+            {numSubmissions} {t("were sent before")}{" "}
+            {lastRefresh?.toLocaleString()}{" "}
+          </p>
         )}
-      </p>
+      </div>
+      <Button onClick={handleDetails}>{t("Reload")}</Button>
     </Container>
-  )
-}
-    
+  );
+};
+
 export default ExerciseDetails;
