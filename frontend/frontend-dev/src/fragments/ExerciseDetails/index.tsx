@@ -5,7 +5,7 @@ import Button from "../../components/Button";
 import Container from "../../components/Container";
 import { useUser } from "../../contexts/user-context";
 import { Answer } from "../../models/Answer";
-import { getExerciseAnswerList } from "../../services/exercises";
+import { getAnswerSummaryList } from "../../services/exercises";
 
 interface ExerciseDetailsProps {
   offering: number;
@@ -14,27 +14,35 @@ interface ExerciseDetailsProps {
 
 const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const [numSubmissions, setNumSubmissions] = useState<number>(0);
+  const [numUniqueUsers, setNumUniqueUsers] = useState<number>(0);
   const [lastRefresh, setLastRefresh] = useState<Date>();
   const { t } = useTranslation();
   const { user } = useUser();
   const token = user?.token || "";
 
   const handleDetails = () => {
-    getExerciseAnswerList(offering, slug, token).then((answerList) => {
-      setNumSubmissions(answerList.length);
+    getAnswerSummaryList(offering, slug, token).then((answerSummariesList) => {
+      setNumUniqueUsers(answerSummariesList.length);
+      setNumSubmissions(
+        answerSummariesList
+          .map((answerSummary) => answerSummary.answer_count)
+          .reduce((a, b) => a + b, 0),
+      );
     });
     setLastRefresh(new Date());
   };
 
   return (
-    <Container className="bg-gray-100 p-4 m-4 flex">
+    <Container className="bg-gray-100 p-4 my-4 flex">
       <div className="flex-grow">
         <p> {slug} </p>
         {!!lastRefresh && (
           <p>
-            {" "}
-            {numSubmissions} {t("were sent before")}{" "}
-            {lastRefresh?.toLocaleString()}{" "}
+            {t("submissions sent before", {
+              total: numSubmissions,
+              users: numUniqueUsers,
+              lastUpdate: lastRefresh?.toLocaleString(),
+            })}
           </p>
         )}
       </div>

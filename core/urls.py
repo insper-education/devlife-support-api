@@ -5,10 +5,12 @@ from core import views
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 
-urlpatterns = [ 
+urlpatterns = [
     path(r'offerings/<int:off_pk>/exercises/', views.ExerciseViewSet.as_view({'post': 'create',
                                                                                 'get': 'list'})),
     path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/', views.ExerciseViewSet.as_view({'post': 'send_answer',
                                                                                                      'get': 'list_answers'})),
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/summaries/', views.ExerciseViewSet.as_view({'get': 'list_summaries'})),
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/summaries/<int:user_pk>', views.ExerciseViewSet.as_view({'get': 'get_summary'})),
     path('', include(router.urls)),
 ]

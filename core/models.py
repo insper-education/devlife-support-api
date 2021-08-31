@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import datetime
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -59,9 +59,22 @@ class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     points = models.FloatField()
-    submission_date = models.DateTimeField(default=datetime.utcnow)
+    submission_date = models.DateTimeField(default=timezone.now)
     summary = models.JSONField()
     long_answer = models.JSONField()
 
     def __str__(self) -> str:
         return f'{self.exercise} -> {self.user.username} ({self.submission_date})'
+
+
+class UserAnswerSummary(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    max_points = models.FloatField(default=0)
+    answer_count = models.IntegerField(default=0)
+    latest = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'exercise'], name='unique_user_exercise_summary'),
+        ]
