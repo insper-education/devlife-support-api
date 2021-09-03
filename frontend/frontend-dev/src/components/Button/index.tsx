@@ -23,10 +23,10 @@ const Button = ({
   const variantClasses = {
     primary: disabled
       ? "bg-gray-300 text-gray-500 cursor-default"
-      : "bg-primary hover:bg-primary-dark text-white",
+      : "bg-primary hover:bg-primary-500 text-white",
     secondary: disabled
       ? "bg-gray-300 text-gray-500 cursor-default"
-      : "bg-secondary hover:bg-secondary-dark text-white",
+      : "bg-secondary hover:bg-secondary-500 text-white",
     hidden: disabled
       ? "bg-transparent text-gray-500 cursor-default"
       : "bg-transparent",

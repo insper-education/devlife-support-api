@@ -6,7 +6,7 @@ import Header from "../../fragments/Header";
 import { useUser } from "../../contexts/user-context";
 import { Exercise } from "../../models/Exercise";
 import ExerciseDetails from "../../fragments/ExerciseDetails";
-import { useExerciseList } from "../../services/exercises";
+import { useExerciseList, useSummaryList } from "../../services/exercises";
 
 const InstructorHome = () => {
   const { t } = useTranslation();

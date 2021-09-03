@@ -10,5 +10,15 @@
   "Invalid credentials": "Usuário ou senha inválidos",
   "Logout": "Sair",
   "not-admin": "Você não tem permissão para acessar esta página. Por favor, entre com um usuário autorizado.",
-  "submissions sent before": "{{users}} alunos enviaram {{total}} respostas até {{lastUpdate}}"
+  "submissions sent before": "{{users}} alunos enviaram {{total}} respostas até {{lastUpdate}}",
+  "Dashboard": "Acompanhamento",
+  "Exercises": "Exercícios",
+  "Topic": "Aula",
+  "Content": "Conteúdo",
+  "Results": "Resultados",
+  "Last attempt": "Última tentativa",
+  "Max points": "Pontuação",
+  "Attempts": "Tentativas",
+  "Tests passing": "Testes passando",
+  "Your solution": "Sua solução"
 }

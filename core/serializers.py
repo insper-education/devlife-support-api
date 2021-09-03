@@ -11,16 +11,16 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise
-        fields = ['slug', 'url', 'type', 'offering']
+        fields = ['pk', 'slug', 'url', 'type', 'offering']
 
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = ['user', 'exercise', 'points', 'submission_date', 'summary', 'long_answer']
+        fields = ['pk', 'user', 'exercise', 'points', 'submission_date', 'summary', 'long_answer']
 
 
 class UserAnswerSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAnswerSummary
-        fields = ['user', 'exercise', 'max_points', 'answer_count', 'latest']
+        fields = ['pk', 'user', 'exercise', 'max_points', 'answer_count', 'latest']
