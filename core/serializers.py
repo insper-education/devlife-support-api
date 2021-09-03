@@ -11,7 +11,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise
-        fields = ['pk', 'slug', 'url', 'type', 'offering']
+        fields = ['pk', 'slug', 'url', 'type', 'offering', 'topic', 'group']
 
 
 class AnswerSerializer(serializers.ModelSerializer):

@@ -4,35 +4,34 @@ import Button from "../../../components/Button";
 import Title from "../../../components/Title";
 import { useUser } from "../../../contexts/user-context";
 import { Exercise } from "../../../models/Exercise";
-import { UserAnswerSummary } from "../../../models/UserAnswerSummary";
+import { UserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import { useAnswer } from "../../../services/exercises";
 
 interface CodeExerciseResultProps {
   offering: number;
-  title: string;
-  summary: UserAnswerSummary;
+  summaryMap: UserAnswerSummaryMap;
   exercise: Exercise;
 }
 
 const CodeExerciseResult = ({
   offering,
+  summaryMap,
   exercise,
-  title,
-  summary,
 }: CodeExerciseResultProps) => {
   const { t } = useTranslation();
   const { user } = useUser();
 
+  const summary = summaryMap[exercise?.pk];
   const { answer } = useAnswer(
     offering,
     user?.token || "",
-    exercise.slug,
+    exercise?.slug,
     summary?.latest,
   );
   return (
     <>
       <Title variant={5} className="px-4 mt-2">
-        {title}
+        {exercise?.slug || ""}
       </Title>
       <div className="px-4 mt-4">
         <Button className="uppercase tracking-wide">Ver Exercício</Button>

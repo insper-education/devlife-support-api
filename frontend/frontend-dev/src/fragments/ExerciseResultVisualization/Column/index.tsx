@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProgressCheck from "../../../components/ProgressCheck";
 import Title from "../../../components/Title";
 import { CompletionRates } from "../service";
@@ -7,18 +7,19 @@ interface ColumnProps {
   title: string;
   options: string[];
   completionRates: CompletionRates;
+  selectedRow: number;
   onSelect?: (option: string, index: number) => void;
 }
 
-const Column = ({ options, onSelect, title, completionRates }: ColumnProps) => {
-  const [selectedRow, setSelectedRow] = useState<number>(-1);
-  useEffect(() => {
-    setSelectedRow(-1);
-  }, [options.join()]);
-
+const Column = ({
+  options,
+  onSelect,
+  title,
+  completionRates,
+  selectedRow,
+}: ColumnProps) => {
   const handleClick = (idx: number) => {
     onSelect && onSelect(options[idx], idx);
-    setSelectedRow(idx);
   };
 
   return (

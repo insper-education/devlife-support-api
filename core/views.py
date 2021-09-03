@@ -1,6 +1,5 @@
 from django import http
 from django.http.response import Http404
-import json
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view
@@ -28,7 +27,9 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
         exercise, new = offering.exercise_set.update_or_create(slug=request.data['slug'],
             defaults={
                 'url': request.data['url'],
-                'type': request.data['type']
+                'type': request.data['type'],
+                'topic': request.data['topic'],
+                'group': request.data['group'],
             })
 
         s = ExerciseSerializer(exercise)
@@ -57,8 +58,8 @@ class AnswerViewSet(viewsets.ModelViewSet):
         answer_data = {
             'user': request.user.pk,
             'exercise': exercise.pk,
-            'summary': json.loads(request.data['summary']),
-            'long_answer': json.loads(request.data['long_answer']),
+            'summary': request.data['summary'],
+            'long_answer': request.data['long_answer'],
             'points': request.data['points']
         }
 
@@ -68,11 +69,6 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def list(self, request, off_pk=None, ex_slug=None):
-        queryset = self.get_queryset()
-        print(queryset)
-        return Response(AnswerSerializer(queryset, many=True).data)
 
 
 def user_filter(request):

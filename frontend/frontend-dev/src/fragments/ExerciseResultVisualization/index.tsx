@@ -6,8 +6,8 @@ import {
   TopicContentExercises,
 } from "../../models/Exercise";
 import { UserAnswerSummaryMap } from "../../models/UserAnswerSummary";
-import CodeExerciseResult from "./CodeExerciseResult";
 import Column from "./Column";
+import ResultColumn from "./ResultColumn";
 import {
   CompletionRates,
   extractCompletionRatesFromExerciseGroups,
@@ -29,7 +29,6 @@ const ExerciseResultVisualization = ({
   const { t } = useTranslation();
   const [topic, setTopic] = useState<string>("");
   const [contentGroup, setContentGroup] = useState<string>("");
-  const [exercise, setExercise] = useState<Exercise | null>(null);
 
   const [
     topicCompletionRates,
@@ -73,38 +72,72 @@ const ExerciseResultVisualization = ({
       );
   }, [contentGroups, contentGroup, summaryMap]);
 
-  const handleSelectExercise = (slug: string, idx: number) =>
-    setExercise(contentGroups[contentGroup][idx]);
+  const [selectedTopicRow, setSelectedTopicRow] = useState<number>(-1);
+  const [selectedGroupRow, setSelectedGroupRow] = useState<number>(-1);
+  const [selectedExerciseRow, setSelectedExerciseRow] = useState<number>(-1);
+  const [selectedLevel, setSelectedLevel] = useState<number>(0);
+  const [selectedData, setSelectedData] = useState<
+    Exercise | ExerciseGroups | TopicContentExercises | null
+  >(null);
+  const handleSelectTopic = (topic: string, idx: number) => {
+    setTopic(topic);
+    setSelectedData({ [topic]: exerciseGroups[topic] });
+    setContentGroup("");
+    setSelectedTopicRow(idx);
+    setSelectedGroupRow(-1);
+    setSelectedExerciseRow(-1);
+    setSelectedLevel(0);
+  };
+  const handleSelectGroup = (group: string, idx: number) => {
+    setContentGroup(group);
+    setSelectedData({ [group]: contentGroups[group] });
+    setSelectedGroupRow(idx);
+    setSelectedExerciseRow(-1);
+    setSelectedLevel(1);
+  };
+  const handleSelectExercise = (slug: string, idx: number) => {
+    const exercise = contentGroups[contentGroup][idx];
+    setSelectedData(exercise);
+    setSelectedExerciseRow(idx);
+    setSelectedLevel(2);
+  };
 
   return (
     <div className={`grid grid-cols-6 shadow-sm ${className ? className : ""}`}>
       <Column
         title={t("Topic")}
         options={Object.keys(exerciseGroups)}
-        onSelect={setTopic}
+        onSelect={handleSelectTopic}
         completionRates={topicCompletionRates}
+        selectedRow={selectedTopicRow}
       />
       <Column
         title={t("Content")}
         options={Object.keys(contentGroups)}
-        onSelect={setContentGroup}
+        onSelect={handleSelectGroup}
         completionRates={groupCompletionRates}
+        selectedRow={selectedGroupRow}
       />
       <Column
         title={t("Exercises")}
         options={exercises}
         onSelect={handleSelectExercise}
         completionRates={exerciseCompletionRates}
+        selectedRow={selectedExerciseRow}
       />
       <div className="col-start-4 col-end-7 border border-gray-200 py-2">
-        {exercise && (
-          <CodeExerciseResult
-            offering={1}
-            title={exercise.slug}
-            exercise={exercise}
-            summary={summaryMap[exercise.pk]}
-          />
-        )}
+        <ResultColumn
+          offering={1}
+          data={selectedData}
+          summaryMap={summaryMap}
+          completionRates={
+            [
+              topicCompletionRates,
+              groupCompletionRates,
+              exerciseCompletionRates,
+            ][selectedLevel]
+          }
+        />
       </div>
     </div>
   );

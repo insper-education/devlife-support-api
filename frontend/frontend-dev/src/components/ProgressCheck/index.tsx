@@ -15,7 +15,7 @@ const ProgressCheck = ({ className, progress }: ProgressCheckProps) => {
   if (progress < 0) progress = 0;
   if (progress > 1) progress = 1;
 
-  const checkLength = 3 * 50 * Math.sqrt(2);
+  const checkLength = (40 + 70) * Math.sqrt(2);
 
   const circleVariants = {
     start: {
@@ -74,7 +74,7 @@ const ProgressCheck = ({ className, progress }: ProgressCheckProps) => {
       />
       {progress === 1 && (
         <motion.path
-          d="M50 80L100 130L200 20"
+          d="M45 95L85 135L155 65"
           fill="transparent"
           stroke="#27A5A2"
           strokeWidth="20"
