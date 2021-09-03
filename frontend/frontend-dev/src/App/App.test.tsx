@@ -24,7 +24,7 @@ import {
 
 beforeEach(() => {
   mockLocalStorage();
-  const { whenPostReceivedOn, whenGetReceivedOn } = setupMockAxios();
+  const { whenPostReceivedOn, whenGetReceivedOn } = setupMockAxios(true);
 
   const usersData = [
     createAdminUserServerData(),

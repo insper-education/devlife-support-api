@@ -61,7 +61,7 @@ interface ArgsResponse {
   response: any;
 }
 
-export const setupMockAxios = () => {
+export const setupMockAxios = (ignoreIfNotFound?: boolean) => {
   const pathArgs: {
     [method: string]: { [path: string]: Array<ArgsResponse> };
   } = {
@@ -76,7 +76,10 @@ export const setupMockAxios = () => {
     data?: any,
   ): Promise<unknown> => {
     const argsResponses = pathArgs[method][url];
-    if (!argsResponses) return Promise.reject(NOT_FOUND);
+    if (!argsResponses)
+      return ignoreIfNotFound
+        ? Promise.resolve(null)
+        : Promise.reject(NOT_FOUND);
 
     for (let argsResponse of argsResponses) {
       if (argsResponse.accept(data)) {
@@ -84,7 +87,9 @@ export const setupMockAxios = () => {
       }
     }
 
-    return Promise.reject(BAD_REQUEST);
+    return ignoreIfNotFound
+      ? Promise.resolve(null)
+      : Promise.reject(BAD_REQUEST);
   };
 
   const mockAddPathArgs = (method: string, url: string) => ({

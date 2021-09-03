@@ -1,15 +1,14 @@
 from django import http
+from django.http.response import Http404
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
 
-from .models import Answer, Offering, User, Exercise
-from .serializers import AnswerSerializer, UserSerializer, ExerciseSerializer
+from .models import Answer, Offering, User, Exercise, UserAnswerSummary
+from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
 from .permissions import IsAdminOrSelf, IsAdminUser
-
-from datetime import datetime
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -24,8 +23,8 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
 
     def create(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
-        
-        exercise, new = offering.exercise_set.update_or_create(slug=request.data['slug'], 
+
+        exercise, new = offering.exercise_set.update_or_create(slug=request.data['slug'],
             defaults={
                 'url': request.data['url'],
                 'type': request.data['type']
@@ -51,20 +50,43 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
             'long_answer': request.data['long_answer'],
             'points': request.data['points']
         }
-    
+
         answer = AnswerSerializer(data=answer_data)
         if answer.is_valid():
             answer.save()
             return Response(answer.data, status=status.HTTP_201_CREATED)
-    
+
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['GET'])
     def list_answers(self, request, off_pk, ex_slug):
         offering = get_object_or_404(Offering, pk=off_pk)
         exercise = get_object_or_404(Exercise, slug=ex_slug)
-        
+
         all_answers = Answer.objects.filter(exercise=exercise)
         all_answers_json = AnswerSerializer(all_answers, many=True)
 
         return Response(all_answers_json.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'])
+    def list_summaries(self, request, off_pk, ex_slug):
+        offering = get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+
+        filters = {'exercise': exercise}
+        if not request.user.is_staff():
+            # Can only see own summaries if not admin
+            filters['user'] = request.user
+        all_summaries = UserAnswerSummary.objects.filter(**filters)
+        all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
+
+        return Response(all_summaries_json.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['GET'])
+    def get_summary(self, request, off_pk, ex_slug, user_pk):
+        offering = get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+        summary = get_object_or_404(UserAnswerSummary, exercise=exercise, user=request.user)
+        summary_json = UserAnswerSummarySerializer(summary)
+
+        return Response(summary_json.data, status=status.HTTP_200_OK)
