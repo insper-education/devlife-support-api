@@ -5,6 +5,7 @@ export const useGetRequest = <T>(
   url: string,
   initialValue: T,
   token?: string,
+  skip?: boolean,
 ) => {
   const [data, setData] = useState<T>(initialValue);
   const [error, setError] = useState();
@@ -24,7 +25,9 @@ export const useGetRequest = <T>(
       .finally(() => setLoading(false));
   };
 
-  useEffect(handleRequest, [url, token]);
+  useEffect(() => {
+    if (!skip) handleRequest();
+  }, [url, token, skip]);
 
   return { data, error, loading, refresh: handleRequest };
 };

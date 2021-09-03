@@ -1,6 +1,5 @@
 import { Exercise } from "../../models/Exercise";
 import { useGetRequest } from "../requests";
-import { useEffect, useState } from "react";
 import { UserAnswerSummary } from "../../models/UserAnswerSummary";
 import { Answer } from "../../models/Answer";
 
@@ -10,20 +9,7 @@ export const useExerciseList = (offering: number, token: string) => {
     [],
     token,
   );
-
-  // TODO THIS SHOULD COME FROM THE BACKEND, THIS IS JUST TEMPORARY
-  const [dummy, setDummy] = useState(data);
-  useEffect(() => {
-    setDummy(
-      data.map((exercise) => ({
-        ...exercise,
-        topic: "while",
-        contentGroup: "handout",
-      })),
-    );
-  }, [data]);
-  return { exerciseList: dummy, error, loading, refresh };
-  // SHOULD BE return { exerciseList: data, error, loading, refresh };
+  return { exerciseList: data, error, loading, refresh };
 };
 
 export const useAnswer = (
@@ -36,6 +22,12 @@ export const useAnswer = (
     `/api/offerings/${offering}/exercises/${exerciseSlug}/answers/${answerId}/`,
     null,
     token,
+    !(
+      exerciseSlug &&
+      token &&
+      answerId !== undefined &&
+      offering !== undefined
+    ),
   );
   return { answer: data, error, loading, refresh };
 };

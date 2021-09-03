@@ -5,7 +5,7 @@ export interface Exercise {
   type: string;
   offering: number;
   topic: string;
-  contentGroup: string;
+  group: string;
 }
 
 export interface ExerciseGroups {
@@ -32,10 +32,10 @@ export const groupByTopicAndContent = (
   const groups: TopicContentExercises = {};
 
   exercises.forEach((exercise) => {
-    const { topic, contentGroup } = exercise;
+    const { topic, group } = exercise;
     if (!groups[topic]) groups[topic] = {};
-    if (!groups[topic][contentGroup]) groups[topic][contentGroup] = [];
-    groups[topic][contentGroup].push(exercise);
+    if (!groups[topic][group]) groups[topic][group] = [];
+    groups[topic][group].push(exercise);
   });
 
   return groups;
