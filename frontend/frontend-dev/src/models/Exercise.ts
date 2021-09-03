@@ -1,20 +1,41 @@
 export interface Exercise {
+  pk: number;
   slug: string;
   url: string;
   type: string;
   offering: number;
+  topic: string;
+  contentGroup: string;
 }
 
-export interface UrlExercises {
+export interface ExerciseGroups {
   [url: string]: Exercise[];
 }
-
-export const groupByURL = (exercises: Exercise[]): UrlExercises => {
-  const groups: UrlExercises = {};
+export const groupByURL = (exercises: Exercise[]): ExerciseGroups => {
+  const groups: ExerciseGroups = {};
 
   exercises.forEach((exercise) => {
     if (!groups[exercise.url]) groups[exercise.url] = [];
     groups[exercise.url].push(exercise);
+  });
+
+  return groups;
+};
+
+export interface TopicContentExercises {
+  [url: string]: ExerciseGroups;
+}
+
+export const groupByTopicAndContent = (
+  exercises: Exercise[],
+): TopicContentExercises => {
+  const groups: TopicContentExercises = {};
+
+  exercises.forEach((exercise) => {
+    const { topic, contentGroup } = exercise;
+    if (!groups[topic]) groups[topic] = {};
+    if (!groups[topic][contentGroup]) groups[topic][contentGroup] = [];
+    groups[topic][contentGroup].push(exercise);
   });
 
   return groups;
