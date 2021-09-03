@@ -69,7 +69,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+      
 
 def user_filter(request):
     user_pk = request.user.pk
@@ -105,4 +105,3 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
     all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
 
     return Response(all_summaries_json.data, status=status.HTTP_200_OK)
-
