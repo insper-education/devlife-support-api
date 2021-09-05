@@ -2,19 +2,19 @@ import axios from "axios";
 import { User } from "../../models/User";
 import { LOGIN_PATH, USER_DATA_PATH } from "../routes";
 
-export const login = (
+export const login = async (
   username: string,
-  password: string,
+  password: string
 ): Promise<User | null> => {
   return axios
     .post(LOGIN_PATH, { username, password })
     .then((res) => res.data.key)
-    .then((token) => {
+    .then(async (token) => {
       return axios
         .get(USER_DATA_PATH, {
           headers: {
-            Authorization: `Token ${token}`,
-          },
+            Authorization: `Token ${token}`
+          }
         })
         .then((res) => res.data)
         .then((userData) => {
@@ -25,7 +25,7 @@ export const login = (
             firstName: userData.first_name,
             lastName: userData.last_name,
             isStaff: userData.is_staff,
-            token,
+            token
           };
         })
         .catch(() => null);

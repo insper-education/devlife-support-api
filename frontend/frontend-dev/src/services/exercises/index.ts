@@ -1,46 +1,35 @@
 import { Exercise } from "../../models/Exercise";
-import axios from "axios";
-import { UserAnswerSummary } from "../../models/UserAnswerSummary";
 import { User } from "../../models/User";
+import { UserAnswerSummary } from "../../models/UserAnswerSummary";
+import { api } from "../api";
 import { useGetRequest } from "../requests";
 
 export const useExerciseList = (offering: number, token: string) => {
   const { data, error, loading } = useGetRequest<Exercise[]>(
     `/api/offerings/${offering}/exercises/`,
     [],
-    token,
+    token
   );
   return { exerciseList: data, error, loading };
 };
 
-export const getAnswerSummaryList = (
+export const getAnswerSummaryList = async (
   offering: number,
-  slug: string,
-  token: string,
+  slug: string
 ): Promise<UserAnswerSummary[]> => {
   const ANSWERS_SUMMARIES_URL = `/api/offerings/${offering}/exercises/${slug}/summaries/`;
 
-  return axios
-    .get(ANSWERS_SUMMARIES_URL, {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    })
-    .then((res) => res.data);
+  const res = await api.get(ANSWERS_SUMMARIES_URL);
+  return res.data;
 };
 
-export const getAnswerSummary = (
+export const getAnswerSummary = async (
   offering: number,
   slug: string,
-  user: User,
+  user: User
 ): Promise<UserAnswerSummary> => {
   const ANSWERS_SUMMARY_URL = `/api/offerings/${offering}/exercises/${slug}/summaries/${user.pk}`;
 
-  return axios
-    .get(ANSWERS_SUMMARY_URL, {
-      headers: {
-        Authorization: `Token ${user.token}`,
-      },
-    })
-    .then((res) => res.data);
+  const res = await api.get(ANSWERS_SUMMARY_URL);
+  return res.data;
 };
