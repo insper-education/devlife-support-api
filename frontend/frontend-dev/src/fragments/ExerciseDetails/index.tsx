@@ -1,10 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../components/Button";
 import Container from "../../components/Container";
 import { useUser } from "../../contexts/user-context";
-import { Answer } from "../../models/Answer";
 import { getAnswerSummaryList } from "../../services/exercises";
 
 interface ExerciseDetailsProps {
@@ -21,7 +19,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const token = user?.token || "";
 
   const handleDetails = () => {
-    getAnswerSummaryList(offering, slug, token).then((answerSummariesList) => {
+    getAnswerSummaryList(offering, slug).then((answerSummariesList) => {
       setNumUniqueUsers(answerSummariesList.length);
       setNumSubmissions(
         answerSummariesList
