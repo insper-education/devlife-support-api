@@ -1,46 +1,62 @@
 import { Exercise } from "../../models/Exercise";
-import axios from "axios";
-import { UserAnswerSummary } from "../../models/UserAnswerSummary";
-import { User } from "../../models/User";
 import { useGetRequest } from "../requests";
+import { UserAnswerSummary } from "../../models/UserAnswerSummary";
+import { Answer } from "../../models/Answer";
 
 export const useExerciseList = (offering: number, token: string) => {
-  const { data, error, loading } = useGetRequest<Exercise[]>(
+  const { data, error, loading, refresh } = useGetRequest<Exercise[]>(
     `/api/offerings/${offering}/exercises/`,
     [],
     token,
   );
-  return { exerciseList: data, error, loading };
+  return { exerciseList: data, error, loading, refresh };
 };
 
-export const getAnswerSummaryList = (
+export const useAnswer = (
   offering: number,
-  slug: string,
   token: string,
-): Promise<UserAnswerSummary[]> => {
-  const ANSWERS_SUMMARIES_URL = `/api/offerings/${offering}/exercises/${slug}/summaries/`;
-
-  return axios
-    .get(ANSWERS_SUMMARIES_URL, {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    })
-    .then((res) => res.data);
+  exerciseSlug: string,
+  answerId: number,
+) => {
+  const { data, error, loading, refresh } = useGetRequest<Answer | null>(
+    `/api/offerings/${offering}/exercises/${exerciseSlug}/answers/${answerId}/`,
+    null,
+    token,
+    !(
+      exerciseSlug &&
+      token &&
+      answerId !== undefined &&
+      offering !== undefined
+    ),
+  );
+  return { answer: data, error, loading, refresh };
 };
 
-export const getAnswerSummary = (
+export const useSummaryList = (
   offering: number,
-  slug: string,
-  user: User,
-): Promise<UserAnswerSummary> => {
-  const ANSWERS_SUMMARY_URL = `/api/offerings/${offering}/exercises/${slug}/summaries/${user.pk}`;
+  token: string,
+  user?: number,
+) => {
+  const query = user ? `?user=${user}` : "";
+  const { data, error, loading, refresh } = useGetRequest<UserAnswerSummary[]>(
+    `/api/offerings/${offering}/summaries/${query}`,
+    [],
+    token,
+  );
+  return { summaryList: data, error, loading, refresh };
+};
 
-  return axios
-    .get(ANSWERS_SUMMARY_URL, {
-      headers: {
-        Authorization: `Token ${user.token}`,
-      },
-    })
-    .then((res) => res.data);
+export const useSummaryListForExercise = (
+  offering: number,
+  exerciseSlug: string,
+  token: string,
+  user?: number,
+) => {
+  const query = user ? `?user=${user}` : "";
+  const { data, error, loading, refresh } = useGetRequest<UserAnswerSummary[]>(
+    `/api/offerings/${offering}/summaries/${exerciseSlug}/${query}`,
+    [],
+    token,
+  );
+  return { summaryList: data, error, loading, refresh };
 };

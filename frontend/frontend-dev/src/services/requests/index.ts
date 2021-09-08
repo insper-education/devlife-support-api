@@ -5,12 +5,13 @@ export const useGetRequest = <T>(
   url: string,
   initialValue: T,
   token?: string,
+  skip?: boolean,
 ) => {
   const [data, setData] = useState<T>(initialValue);
   const [error, setError] = useState();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const handleRequest = () => {
     const params: any = {};
     if (!!token) params["headers"] = { Authorization: `Token ${token}` };
 
@@ -22,7 +23,11 @@ export const useGetRequest = <T>(
       .then(setData)
       .catch((reason) => setError(reason))
       .finally(() => setLoading(false));
-  }, [url, token]);
+  };
 
-  return { data, error, loading };
+  useEffect(() => {
+    if (!skip) handleRequest();
+  }, [url, token, skip]);
+
+  return { data, error, loading, refresh: handleRequest };
 };
