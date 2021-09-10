@@ -1,5 +1,6 @@
 import { RouteProps } from "react-router";
 import { User } from "../models/User";
+import ExerciseAnswers from "../screens/ExerciseAnswers";
 import InstructorHome from "../screens/InstructorHome";
 import Login from "../screens/Login";
 import StudentHome from "../screens/StudentHome";
@@ -7,7 +8,8 @@ import StudentHome from "../screens/StudentHome";
 export enum routes {
   STUDENT_HOME = "/",
   INSTRUCTOR_HOME = "/instructor",
-  LOGIN = "/login",
+  EXERCISE_ANSWERS = "/instructor/answers/:off_id/:slug/",
+  LOGIN = "/login"
 }
 
 interface RouteData {
@@ -22,8 +24,8 @@ routesData[routes.STUDENT_HOME] = {
   props: {
     path: routes.STUDENT_HOME,
     exact: true,
-    component: StudentHome,
-  },
+    component: StudentHome
+  }
 };
 routesData[routes.INSTRUCTOR_HOME] = {
   title: "Instructor Dashboard",
@@ -31,16 +33,25 @@ routesData[routes.INSTRUCTOR_HOME] = {
   props: {
     path: routes.INSTRUCTOR_HOME,
     exact: true,
-    component: InstructorHome,
-  },
+    component: InstructorHome
+  }
+};
+routesData[routes.EXERCISE_ANSWERS] = {
+  title: "Exercise Answers",
+  permissionTest: (user: User | null): boolean => !!user?.isStaff,
+  props: {
+    path: routes.EXERCISE_ANSWERS,
+    exact: true,
+    component: ExerciseAnswers
+  }
 };
 routesData[routes.LOGIN] = {
   title: "Login",
   props: {
     path: routes.LOGIN,
     exact: true,
-    component: Login,
-  },
+    component: Login
+  }
 };
 
 export const navRoutes: string[] = [routes.INSTRUCTOR_HOME];

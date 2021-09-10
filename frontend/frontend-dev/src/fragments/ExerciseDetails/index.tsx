@@ -1,9 +1,10 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import Button from "../../components/Button";
-import Container from "../../components/Container";
 import { useUser } from "../../contexts/user-context";
+import { dynamicPathname } from "../../helpers";
+import { routes } from "../../routes";
 import { useSummaryListForExercise } from "../../services/exercises";
 
 interface ExerciseDetailsProps {
@@ -17,7 +18,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const {
     summaryList,
     loading,
-    refresh: refreshSummaryList,
+    refresh: refreshSummaryList
   } = useSummaryListForExercise(offering, slug, token);
 
   const { t } = useTranslation();
@@ -31,13 +32,18 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
     setNumSubmissions(
       summaryList
         .map((answerSummary) => answerSummary.answer_count)
-        .reduce((a, b) => a + b, 0),
+        .reduce((a, b) => a + b, 0)
     );
     setLastRefresh(new Date());
   }, [loading, summaryList]);
 
+  const answersRoute = dynamicPathname(routes.EXERCISE_ANSWERS, {
+    off_id: offering.toString(),
+    slug
+  });
+
   return (
-    <Container className="bg-gray-100 p-4 my-4 flex">
+    <div className="bg-gray-100 p-4 flex flex-col">
       <div className="flex-grow">
         <p> {slug} </p>
         {!!lastRefresh && (
@@ -45,13 +51,18 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
             {t("submissions sent before", {
               total: numSubmissions,
               users: numUniqueUsers,
-              lastUpdate: lastRefresh?.toLocaleString(),
+              lastUpdate: lastRefresh?.toLocaleString()
             })}
           </p>
         )}
       </div>
-      <Button onClick={refreshSummaryList}>{t("Reload")}</Button>
-    </Container>
+      <div className="flex flex-row mt-4 justify-around">
+        <Link to={answersRoute}>
+          <Button>{t("See details")}</Button>
+        </Link>
+        <Button onClick={refreshSummaryList}>{t("Reload")}</Button>
+      </div>
+    </div>
   );
 };
 
