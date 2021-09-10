@@ -10,7 +10,7 @@ const Header = () => {
   const { user } = useUser();
 
   return (
-    <nav className="py-2 px-4 bg-primary text-white">
+    <nav className="py-2 px-4">
       <ul className="flex items-center">
         <li className="uppercase font-bold">
           <Link to="/">{t("Developer Life")}</Link>

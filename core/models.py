@@ -43,6 +43,8 @@ class Exercise(models.Model):
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
     slug = models.SlugField()
     url = models.URLField()
+    topic = models.CharField(max_length=1024)
+    group = models.CharField(max_length=1024)
 
     class ExerciseType(models.TextChoices):
         CODE = 'CODE', 'Code'

@@ -43,7 +43,4 @@ routesData[routes.LOGIN] = {
   },
 };
 
-export const navRoutes: string[] = [
-  routes.STUDENT_HOME,
-  routes.INSTRUCTOR_HOME,
-];
+export const navRoutes: string[] = [routes.INSTRUCTOR_HOME];

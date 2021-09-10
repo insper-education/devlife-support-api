@@ -2,15 +2,17 @@ from django.urls import include, path, re_path
 from rest_framework import routers
 from core import views
 
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
+users_router = routers.DefaultRouter()
+users_router.register(r'users', views.UserViewSet)
+
+answers_router = routers.DefaultRouter()
+answers_router.register(r'answers', views.AnswerViewSet, basename='answers')
 
 urlpatterns = [
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/', include(answers_router.urls)),
     path(r'offerings/<int:off_pk>/exercises/', views.ExerciseViewSet.as_view({'post': 'create',
                                                                                 'get': 'list'})),
-    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/', views.ExerciseViewSet.as_view({'post': 'send_answer',
-                                                                                                     'get': 'list_answers'})),
-    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/summaries/', views.ExerciseViewSet.as_view({'get': 'list_summaries'})),
-    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/summaries/<int:user_pk>', views.ExerciseViewSet.as_view({'get': 'get_summary'})),
-    path('', include(router.urls)),
+    path(r'offerings/<int:off_pk>/summaries/', views.list_summaries),
+    path(r'offerings/<int:off_pk>/summaries/<slug:ex_slug>/', views.list_summaries_for_exercise),
+    path('', include(users_router.urls)),
 ]
