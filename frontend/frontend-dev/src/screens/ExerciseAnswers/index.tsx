@@ -1,14 +1,14 @@
-import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Doughnut } from "react-chartjs-2";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import Container from "../../components/Container";
-import { useUser } from "../../contexts/user-context";
+import { AnswersChart } from "../../fragments/AnswersChart";
 import Header from "../../fragments/Header";
 import { dynamicPathname } from "../../helpers";
 import { routes } from "../../routes";
+import { api } from "../../services/api";
+import { LIST_EXERCISE_ANSWERS } from "../../services/routes";
 
 interface IExerciseAnswersParams {
   off_id: string;
@@ -19,7 +19,6 @@ interface ISummary {
   choice: number;
   num_choices: number;
 }
-
 interface IAnswer {
   pk: number;
   user: number;
@@ -27,100 +26,77 @@ interface IAnswer {
   points: number;
   submission_date: string;
   summary?: ISummary;
-  long_answer?: any;
+  long_answer?: string;
 }
 
 function ExerciseAnswers() {
   const { t } = useTranslation();
   const { off_id: offering, slug } = useParams<IExerciseAnswersParams>();
   const [answers, setAnswers] = useState<IAnswer[]>([]);
-  const { user } = useUser();
+
+  const textAnswers = useMemo(() => {
+    return answers
+      .filter((answer) => typeof answer.long_answer === "string")
+      .map((answer) => ({
+        timestamp: answer.submission_date,
+        summary: answer.summary,
+        long: answer.long_answer
+      }));
+  }, [answers]);
+
+  const testsAnswers = useMemo(() => {
+    return answers
+      .filter((answer) => !!(typeof answer.summary !== "string"))
+      .map((answer) => answer.summary);
+  }, [answers]);
 
   useEffect(() => {
     let isMounted = true; // prevent memory leak
 
-    if (user?.token) {
-      const answersEndpoint =
-        "/api/offerings/:offering/exercises/:slug/answers/";
-      const endpoint = dynamicPathname(answersEndpoint, { offering, slug });
-
-      axios
-        .get<IAnswer[]>(endpoint, {
-          headers: { Authorization: `Token ${user.token}` }
-        })
-        .then((res) => {
-          if (isMounted) {
-            setAnswers(res.data || []);
-          }
-        });
-    }
+    api
+      .get<IAnswer[]>(
+        dynamicPathname(LIST_EXERCISE_ANSWERS, { offering, slug })
+      )
+      .then((res) => {
+        if (isMounted) {
+          setAnswers(res.data || []);
+        }
+      });
 
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const [answersAmount, optionsAmount] = useMemo(() => {
+  const optionsAmount = useMemo(() => {
     let optionsAmount;
-    optionsAmount = answers[0]?.summary?.num_choices || 0;
-    return [answers.length, optionsAmount];
-  }, [answers]);
+    optionsAmount = testsAnswers[0]?.num_choices || 0;
+    return optionsAmount;
+  }, [testsAnswers]);
 
-  const [options, choicesAmount] = useMemo(() => {
-    const alfa = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const options: string[] = [];
-    for (let i = 0; i < optionsAmount; i++) {
-      options.push(alfa[i]);
-    }
-    const choices = answers.map(
-      (answer) => options[answer.summary?.choice || 0]
-    );
-    const choicesAmount: Record<string, number> = {};
+  // options: A, B, C...
+  const [options, selectedOptionsCount] = useMemo(() => {
+    const options = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+    options.length = optionsAmount;
+
+    const choices = testsAnswers.map((answer) => options[answer?.choice || 0]);
+
+    const selectedOptionsCount: Record<string, number> = {};
     options.forEach((option) => {
-      choicesAmount[option] = choices.filter(
+      selectedOptionsCount[option] = choices.filter(
         (choice) => choice === option
       ).length;
     });
-    console.log(choicesAmount);
-    return [options, Object.values(choicesAmount)];
-  }, [answers, optionsAmount]);
+    return [options, Object.values(selectedOptionsCount)];
+  }, [testsAnswers, optionsAmount]);
 
-  const randomColor = useCallback((lowOpacity = false) => {
-    let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    if (lowOpacity) {
-      color += Math.floor(Math.random() * 255).toString(16);
-    }
-    return color;
-  }, []);
-
-  const data = {
-    labels: options,
-    datasets: [
-      {
-        label: "# of answers",
-        data: choicesAmount,
-        backgroundColor: [
-          "#ff638433",
-          "#36a2eb33",
-          "#ffce5633"
-        ],
-        borderColor: [
-          "#ff6384",
-          "#36a2eb",
-          "#ffce56"
-        ],
-        borderWidth: 2
-      }
-    ]
-  };
   return (
     <Container>
       <Header />
 
       <Link
         to={routes.INSTRUCTOR_HOME}
-        className="bg-gray-100 text-blue-500 px-4 py-2"
-      >
+        className="bg-gray-100 text-blue-500 px-4 py-2">
         <b>{t("Go back")}</b>
       </Link>
 
@@ -132,13 +108,54 @@ function ExerciseAnswers() {
           <b>{t("Exercise slug")}:</b> {slug}
         </p>
         <p>
-          <b>{t("Multiple choices answers")}:</b> {answers.length}
+          <b>{t("Multiple choices answers")}:</b> {testsAnswers.length}
+        </p>
+        <p>
+          <b>{t("Text answers")}:</b> {textAnswers.length}
         </p>
       </div>
 
-      <div style={{ height: 300, width: 300 }}>
-        <Doughnut data={data} />
-      </div>
+      {!!testsAnswers.length && (
+        <Container className="bg-gray-100 py-3 rounded flex flex align-center justify-center">
+          <AnswersChart
+            options={options}
+            selectedOptionsCount={selectedOptionsCount}
+          />
+        </Container>
+      )}
+
+      {!!textAnswers.length && (
+        <Container>
+          <table className="bg-gray-100 table-auto border-separate text-sm">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="border p-3">{t("Submission time")}</th>
+                <th className="border p-3">{t("Answer")}</th>
+                <th className="border p-3">{t("Long answer")}</th>
+              </tr>
+            </thead>
+
+            <tbody className="striped">
+              {textAnswers.map((answer, index) => (
+                <tr
+                  key={"textAnswers__" + index}
+                  style={{
+                    backgroundColor:
+                      index % 2
+                        ? "rgba(209, 213, 219, var(--tw-bg-opacity)"
+                        : "transparent"
+                  }}>
+                  <td className="border p-3">
+                    {new Date(answer.timestamp).toLocaleString()}
+                  </td>
+                  <td className="border p-3">{String(answer.summary)}</td>
+                  <td className="border p-3">{String(answer.long)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Container>
+      )}
     </Container>
   );
 }

@@ -1,11 +1,18 @@
+import { dynamicPathname } from "../../helpers";
 import { Answer } from "../../models/Answer";
 import { Exercise } from "../../models/Exercise";
 import { UserAnswerSummary } from "../../models/UserAnswerSummary";
 import { useGetRequest } from "../requests";
+import {
+  EXERCISE_ANSWER,
+  EXERCISE_SUMMARY,
+  LIST_EXERCISES,
+  LIST_EXERCISES_SUMMARIES
+} from "../routes";
 
 export const useExerciseList = (offering: number, token: string) => {
   const { data, error, loading, refresh } = useGetRequest<Exercise[]>(
-    `/api/offerings/${offering}/exercises/`,
+    dynamicPathname(LIST_EXERCISES, { offering: String(offering) }),
     [],
     token
   );
@@ -16,18 +23,13 @@ export const useAnswer = (
   offering: number,
   token: string,
   exerciseSlug: string,
-  answerId: number,
+  answerId: number
 ) => {
   const { data, error, loading, refresh } = useGetRequest<Answer | null>(
-    `/api/offerings/${offering}/exercises/${exerciseSlug}/answers/${answerId}/`,
+    dynamicPathname(EXERCISE_ANSWER, { offering, exerciseSlug, answerId }),
     null,
     token,
-    !(
-      exerciseSlug &&
-      token &&
-      answerId !== undefined &&
-      offering !== undefined
-    ),
+    !(exerciseSlug && token && answerId !== undefined && offering !== undefined)
   );
   return { answer: data, error, loading, refresh };
 };
@@ -35,13 +37,13 @@ export const useAnswer = (
 export const useSummaryList = (
   offering: number,
   token: string,
-  user?: number,
+  user?: number
 ) => {
   const query = user ? `?user=${user}` : "";
   const { data, error, loading, refresh } = useGetRequest<UserAnswerSummary[]>(
-    `/api/offerings/${offering}/summaries/${query}`,
+    `${dynamicPathname(LIST_EXERCISES_SUMMARIES, { offering })}${query}`,
     [],
-    token,
+    token
   );
   return { summaryList: data, error, loading, refresh };
 };
@@ -50,13 +52,16 @@ export const useSummaryListForExercise = (
   offering: number,
   exerciseSlug: string,
   token: string,
-  user?: number,
+  user?: number
 ) => {
   const query = user ? `?user=${user}` : "";
   const { data, error, loading, refresh } = useGetRequest<UserAnswerSummary[]>(
-    `/api/offerings/${offering}/summaries/${exerciseSlug}/${query}`,
+    `${dynamicPathname(EXERCISE_SUMMARY, {
+      offering,
+      exerciseSlug
+    })}${query}`,
     [],
-    token,
+    token
   );
   return { summaryList: data, error, loading, refresh };
 };

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * @param route Dynamic route. Ex:
  * ```typescript
  *    "/api/offerings/:off_pk/exercises/:ex_slug/answers/"
@@ -13,13 +13,10 @@
  * "/api/offerings/1/exercises/quiz-0/answers"
  * ```
  */
-export function dynamicPathname(
-  route: string,
-  params: Record<string, string>
-) {
+export function dynamicPathname(route: string, params: Record<string, string|number>) {
   for (let [key, value] of Object.entries(params)) {
-    const regexp = new RegExp(`:${key}`, 'g');
-    route = route.replace(regexp, value);
+    const regexp = new RegExp(`:${key}`, "g");
+    route = route.replace(regexp, String(value));
   }
   return route;
 }
