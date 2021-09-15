@@ -8,7 +8,7 @@ import StudentHome from "../screens/StudentHome";
 export enum routes {
   STUDENT_HOME = "/",
   INSTRUCTOR_HOME = "/instructor",
-  EXERCISE_ANSWERS = "/instructor/answers/:off_id/:slug/",
+  EXERCISE_ANSWERS = "/instructor/answers/:offering/:slug/",
   LOGIN = "/login"
 }
 

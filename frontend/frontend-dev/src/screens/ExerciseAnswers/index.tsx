@@ -11,7 +11,7 @@ import { api } from "../../services/api";
 import { LIST_EXERCISE_ANSWERS } from "../../services/routes";
 
 interface IExerciseAnswersParams {
-  off_id: string;
+  offering: string;
   slug: string;
 }
 
@@ -31,7 +31,7 @@ interface IAnswer {
 
 function ExerciseAnswers() {
   const { t } = useTranslation();
-  const { off_id: offering, slug } = useParams<IExerciseAnswersParams>();
+  const { offering, slug } = useParams<IExerciseAnswersParams>();
   const [answers, setAnswers] = useState<IAnswer[]>([]);
 
   const textAnswers = useMemo(() => {

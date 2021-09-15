@@ -26,6 +26,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const [numSubmissions, setNumSubmissions] = useState<number>(0);
   const [numUniqueUsers, setNumUniqueUsers] = useState<number>(0);
   const [lastRefresh, setLastRefresh] = useState<Date>();
+
   useEffect(() => {
     if (loading) return;
     setNumUniqueUsers(summaryList.length);
@@ -38,7 +39,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   }, [loading, summaryList]);
 
   const answersRoute = dynamicPathname(routes.EXERCISE_ANSWERS, {
-    off_id: offering.toString(),
+    offering,
     slug
   });
 
