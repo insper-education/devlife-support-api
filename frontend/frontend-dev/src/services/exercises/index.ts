@@ -1,13 +1,13 @@
-import { Exercise } from "../../models/Exercise";
-import { useGetRequest } from "../requests";
-import { UserAnswerSummary } from "../../models/UserAnswerSummary";
 import { Answer } from "../../models/Answer";
+import { Exercise } from "../../models/Exercise";
+import { UserAnswerSummary } from "../../models/UserAnswerSummary";
+import { useGetRequest } from "../requests";
 
 export const useExerciseList = (offering: number, token: string) => {
   const { data, error, loading, refresh } = useGetRequest<Exercise[]>(
     `/api/offerings/${offering}/exercises/`,
     [],
-    token,
+    token
   );
   return { exerciseList: data, error, loading, refresh };
 };
