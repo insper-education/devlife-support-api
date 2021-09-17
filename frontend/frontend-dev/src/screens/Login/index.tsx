@@ -29,7 +29,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user && redirectTo) {
-      redirectTo += `${redirectTo.indexOf("?") >= 0 ? ";" : "?"}token=${
+      redirectTo += `${redirectTo.indexOf("?") >= 0 ? "&" : "?"}token=${
         user.token
       }`;
       window.location.href = redirectTo;
