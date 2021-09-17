@@ -29,6 +29,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user && redirectTo) {
+      redirectTo = decodeURIComponent(redirectTo);
       redirectTo += `${redirectTo.indexOf("?") >= 0 ? "&" : "?"}token=${
         user.token
       }`;
