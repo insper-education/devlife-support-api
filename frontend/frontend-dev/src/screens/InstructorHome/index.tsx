@@ -2,11 +2,11 @@ import { useTranslation } from "react-i18next";
 import Container from "../../components/Container";
 import AdminRedirect from "../../components/Redirect/AdminRedirect";
 import Title from "../../components/Title";
-import Header from "../../fragments/Header";
 import { useUser } from "../../contexts/user-context";
-import { Exercise } from "../../models/Exercise";
 import ExerciseDetails from "../../fragments/ExerciseDetails";
-import { useExerciseList, useSummaryList } from "../../services/exercises";
+import Header from "../../fragments/Header";
+import { Exercise } from "../../models/Exercise";
+import { useExerciseList } from "../../services/exercises";
 
 const InstructorHome = () => {
   const { t } = useTranslation();
@@ -23,13 +23,15 @@ const InstructorHome = () => {
       <Header />
       <Container>
         <Title>{t("Instructor Dashboard")}</Title>
-        {exerciseList.map((item: Exercise) => (
-          <ExerciseDetails
-            key={`exercise-${item.slug}`}
-            offering={offering}
-            slug={item.slug}
-          />
-        ))}
+        <div className="grid gap-1 grid-cols-3 mt-4">
+          {exerciseList.map((item: Exercise) => (
+            <ExerciseDetails
+              key={`exercise-${item.slug}`}
+              offering={offering}
+              slug={item.slug}
+            />
+          ))}
+        </div>
       </Container>
     </>
   );
