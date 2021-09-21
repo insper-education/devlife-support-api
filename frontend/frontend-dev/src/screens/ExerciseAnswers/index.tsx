@@ -4,12 +4,13 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import Container from "../../components/Container";
 import { Table } from "../../components/Table";
-import { AnswersChart } from "../../fragments/AnswersChart";
+import { Bars, Doughnut } from "../../components/Charts";
 import Header from "../../fragments/Header";
 import { dynamicPathname } from "../../helpers";
 import { routes } from "../../routes";
 import { api } from "../../services/api";
 import { LIST_EXERCISE_ANSWERS } from "../../services/routes";
+import Button from "../../components/Button";
 
 interface IExerciseAnswersParams {
   offering: string;
@@ -117,12 +118,7 @@ function ExerciseAnswers() {
       </div>
 
       {!!testsAnswers.length && (
-        <Container className="bg-gray-100 py-3 rounded flex flex align-center justify-center">
-          <AnswersChart
-            options={options}
-            selectedOptionsCount={selectedOptionsCount}
-          />
-        </Container>
+        <Doughnut options={options} numSelectedOptions={selectedOptionsCount} />
       )}
 
       {!!textAnswers.length && (
@@ -130,7 +126,15 @@ function ExerciseAnswers() {
           data={textAnswers.map((answer) => ({
             [t("Submission time")]: new Date(answer.timestamp).toLocaleString(),
             [t("Summary")]: answer.summary,
-            [t("Long answer")]: " lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem ",
+            [t("Long answer")]: (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  console.log(answer.long);
+                }}>
+                click me
+              </Button>
+            ),
           }))}
         />
       )}
