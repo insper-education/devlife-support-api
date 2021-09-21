@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import Container from "../../components/Container";
+import { Table } from "../../components/Table";
 import { AnswersChart } from "../../fragments/AnswersChart";
 import Header from "../../fragments/Header";
 import { dynamicPathname } from "../../helpers";
@@ -40,7 +41,7 @@ function ExerciseAnswers() {
       .map((answer) => ({
         timestamp: answer.submission_date,
         summary: answer.summary,
-        long: answer.long_answer
+        long: answer.long_answer,
       }));
   }, [answers]);
 
@@ -125,36 +126,13 @@ function ExerciseAnswers() {
       )}
 
       {!!textAnswers.length && (
-        <Container>
-          <table className="bg-gray-100 table-auto border-separate text-sm">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="border p-3">{t("Submission time")}</th>
-                <th className="border p-3">{t("Answer")}</th>
-                <th className="border p-3">{t("Long answer")}</th>
-              </tr>
-            </thead>
-
-            <tbody className="striped">
-              {textAnswers.map((answer, index) => (
-                <tr
-                  key={"textAnswers__" + index}
-                  style={{
-                    backgroundColor:
-                      index % 2
-                        ? "rgba(209, 213, 219, var(--tw-bg-opacity)"
-                        : "transparent"
-                  }}>
-                  <td className="border p-3">
-                    {new Date(answer.timestamp).toLocaleString()}
-                  </td>
-                  <td className="border p-3">{String(answer.summary)}</td>
-                  <td className="border p-3">{String(answer.long)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Container>
+        <Table
+          data={textAnswers.map((answer) => ({
+            [t("Submission time")]: new Date(answer.timestamp).toLocaleString(),
+            [t("Summary")]: answer.summary,
+            [t("Long answer")]: " lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem ",
+          }))}
+        />
       )}
     </Container>
   );
