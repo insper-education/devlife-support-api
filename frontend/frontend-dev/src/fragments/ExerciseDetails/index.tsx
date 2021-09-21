@@ -18,7 +18,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
   const {
     summaryList,
     loading,
-    refresh: refreshSummaryList
+    refresh: refreshSummaryList,
   } = useSummaryListForExercise(offering, slug, token);
 
   const { t } = useTranslation();
@@ -40,7 +40,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
 
   const answersRoute = dynamicPathname(routes.EXERCISE_ANSWERS, {
     offering,
-    slug
+    slug,
   });
 
   return (
@@ -52,7 +52,7 @@ const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
             {t("submissions sent before", {
               total: numSubmissions,
               users: numUniqueUsers,
-              lastUpdate: lastRefresh?.toLocaleString()
+              lastUpdate: lastRefresh?.toLocaleString(),
             })}
           </p>
         )}
