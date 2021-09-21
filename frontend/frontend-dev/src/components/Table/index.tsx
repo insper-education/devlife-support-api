@@ -13,7 +13,7 @@ function UnmemoizedTable({ data }: ITableProps) {
   const rows = data.map((item) => Object.values(item));
 
   return (
-    <div className="flex m-2 w-max">
+    <div className="flex m-2">
       <div className="overflow-x-auto no-scrollbar max-w-full">
         <div className="align-middle inline-block">
           <div className="border-b border-gray-200 rounded-lg overflow-hidden border">
