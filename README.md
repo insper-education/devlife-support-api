@@ -18,3 +18,8 @@ Currently available:
 
 - Django + React: https://medium.com/@meric.emmanuel/how-to-connect-django-with-create-react-app-d1581139cad1
 - React project structure from: https://github.com/IgneousGuikas/react-project-guide
+
+## Docker
+
+	docker build -t devlife-support .
+	docker run -v $PWD:/app -p 8000:8000 devlife-support
