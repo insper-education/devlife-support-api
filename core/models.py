@@ -50,6 +50,7 @@ class Exercise(models.Model):
         CODE = 'CODE', 'Code'
         QUIZ = 'QUIZ', 'Quiz'
         TEXT = 'TEXT', 'Text'
+        CSS = 'CSS', 'CSS'
 
     type = models.CharField(max_length=4, choices=ExerciseType.choices)
 
