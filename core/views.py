@@ -2,13 +2,13 @@ from django import http
 from django.http.response import Http404
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
 from .models import Answer, Offering, User, Exercise, UserAnswerSummary
 from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
-from .permissions import IsAdminOrSelf, IsAdminUser
+from .permissions import IsAdminOrSelf, IsAdminUser, IsEnrolledInOffering
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -84,6 +84,7 @@ def user_filter(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsEnrolledInOffering])
 def list_summaries(request, off_pk):
     get_object_or_404(Offering, pk=off_pk)
 
@@ -95,6 +96,7 @@ def list_summaries(request, off_pk):
 
 
 @api_view(['GET'])
+@permission_classes([IsEnrolledInOffering])
 def list_summaries_for_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
     exercise = get_object_or_404(Exercise, slug=ex_slug)

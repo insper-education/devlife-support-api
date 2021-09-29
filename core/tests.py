@@ -1,7 +1,11 @@
+from rest_framework import views
+from core.permissions import IsEnrolledInOffering
 from pathlib import Path
 from django.http import Http404
 from django.test import TestCase
-from core.models import Course, Enrollment, Instructor, Offering, Student, Teaches, Exercise, Answer, UserAnswerSummary
+from core.models import Course, Enrollment, Instructor, Offering, Student, Teaches, Exercise, Answer, User, UserAnswerSummary
+from unittest.mock import MagicMock
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 
 class AnswerSignalTestCase(TestCase):
@@ -98,3 +102,52 @@ class AnswerSignalTestCase(TestCase):
         answer.delete()
         self.assert_sumary(self.exercise1, 0, 0, None)
         self.assert_sumary(self.exercise2, 0.8, 1, answers2[-1].id)
+
+
+class IsEnrolledPermisson(TestCase):
+    def setUp(self):
+        self.permission = IsEnrolledInOffering()
+
+        self.prof1 = Instructor.objects.create(
+            username='prof1',
+            password='12'
+        )
+
+        self.student1 = Student.objects.create(
+            username='student1',
+            password='12'
+        )
+
+        self.student2 = Student.objects.create(
+            username='student2',
+            password='12'
+        )
+
+        self.course = Course.objects.create(
+            name='TestCourse'
+        )
+
+        self.offering = Offering.objects.create(
+            course=self.course,
+            description='bla'
+        )
+
+        Enrollment.objects.create(
+            student=self.student1,
+            offering=self.offering
+        )
+
+    def test_deny_access_to_student_not_enrolled(self):
+        request = MagicMock(user=self.student2)
+        view = MagicMock(kwargs={'off_pk': self.offering.pk})
+        assert self.permission.has_permission(request, view) == False
+
+    def test_allow_access_to_enrolled_student(self):
+        request = MagicMock(user=self.student1)
+        view = MagicMock(kwargs={'off_pk': self.offering.pk})
+        assert self.permission.has_permission(request, view) == True
+
+    def test_allow_access_to_instructors(self):
+        request = MagicMock(user=self.prof1)
+        view = MagicMock(kwargs={'off_pk': self.offering.pk})
+        assert self.permission.has_permission(request, view) == True

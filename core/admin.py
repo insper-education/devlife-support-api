@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import ModelAdmin
-from .models import User, Course, Offering, Exercise, Answer, UserAnswerSummary
+from .models import Enrollment, Instructor, Student, User, Course, Offering, Exercise, Answer, UserAnswerSummary
 
 
 class CourseAdmin(ModelAdmin):
@@ -26,3 +26,6 @@ admin.site.register(Offering, OfferingAdmin)
 admin.site.register(Exercise, ExerciseAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(UserAnswerSummary)
+admin.site.register(Student)
+admin.site.register(Instructor)
+admin.site.register(Enrollment)

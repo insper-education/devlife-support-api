@@ -6,12 +6,15 @@ from django.utils import timezone
 class User(AbstractUser):
     pass
 
+
 class Student(User):
     pass
 
 
 class Instructor(User):
-    pass
+    def save(self, *args, **kwargs):
+        self.is_staff = True
+        return super().save(*args, **kwargs)
 
 
 class Course(models.Model):
