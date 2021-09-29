@@ -49,7 +49,7 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
 
 class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser|IsEnrolledInOffering]
 
     def get_queryset(self):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
