@@ -7,6 +7,8 @@ from core.models import Course, Enrollment, Instructor, Offering, Student, Teach
 from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, force_authenticate
 
+from .views import ExerciseViewSet
+
 
 class AnswerSignalTestCase(TestCase):
     def setUp(self):
@@ -151,3 +153,47 @@ class IsEnrolledPermisson(TestCase):
         request = MagicMock(user=self.prof1)
         view = MagicMock(kwargs={'off_pk': self.offering.pk})
         assert self.permission.has_permission(request, view) == True
+    
+    def test_student_list_create_exercises_in_offering(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/')
+        force_authenticate(req_list, self.student1)
+        viewset = ExerciseViewSet.as_view({'get': 'list', 'post': 'create'})
+        resp = viewset(req_list, off_pk=1)
+        assert resp.status_code == 200, 'Student should list all exercises'
+
+
+        req_create = fac.post(f'offerings/{self.offering.pk}/exercises/', data={
+                'url': '/abc/',
+                'type': 'code',
+                'topic': 'while',
+                'group': 'gg',
+            })
+        resp = viewset(req_create, off_pk=1)
+        assert resp.status_code == 401, 'Student should not be able to create exercises'
+
+    def test_instructor_list_create_exercises_in_offering(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/')
+        force_authenticate(req_list, self.prof1)
+        viewset = ExerciseViewSet.as_view({'get': 'list', 'post': 'create'})
+        resp = viewset(req_list, off_pk=1)
+        assert resp.status_code == 200, f'Instructor should be able to list all exercises. Got {resp.status_code}'
+
+        req_create = fac.post(f'offerings/{self.offering.pk}/exercises/', data={
+                'url': '/abc/',
+                'type': 'code',
+                'topic': 'while',
+                'group': 'gg',
+            })
+        resp = viewset(req_create, off_pk=1)
+        assert resp.status_code >= 200, 'Instructor should be able to create exercises'
+
+    
+class StudentAndInstructorTests(TestCase):
+    def test_instructor_always_staff(self):
+        self.prof1 = Instructor.objects.create(
+            username='prof1',
+            password='12'
+        )
+        assert self.prof1.is_staff == True

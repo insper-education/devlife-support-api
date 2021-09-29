@@ -19,7 +19,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ExerciseSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        permissions = [IsAdminUser]
+        if self.action == 'list':
+            permissions = [IsAdminUser | IsEnrolledInOffering]
+
+        return [permission() for permission in permissions] 
 
     def create(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
