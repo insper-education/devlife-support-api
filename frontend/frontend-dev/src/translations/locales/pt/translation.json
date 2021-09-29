@@ -1,10 +1,11 @@
 {
   "Username": "Usuário",
   "Password": "Senha",
-  "Type username": "Digite o nome de usuário",
+  "Type username": "Nome de usuário",
   "Student Dashboard": "Dashboard do Aluno",
   "Instructor Dashboard": "Dashboard do Professor",
   "Sign in": "Entrar",
+  "Sign up": "Criar conta",
   "username is a required field": "Campo obrigatório",
   "password is a required field": "Campo obrigatório",
   "Invalid credentials": "Usuário ou senha inválidos",

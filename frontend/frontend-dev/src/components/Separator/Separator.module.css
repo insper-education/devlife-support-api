@@ -1,0 +1,36 @@
+/* https://css-tricks.com/line-on-sides-headers/ */
+.separator {
+  width: 100%;
+  margin: 2rem 0;
+}
+.separator span {
+  color: #98acab;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.separator span:before,
+.separator span:after {
+  content: "";
+  flex-grow: 1;
+  height: 2px;
+  background-color: #98acab;
+}
+
+.separator span:before,
+.separator span:after {
+  content: "";
+  flex-grow: 1;
+  height: 2px;
+  background-color: #98acab;
+  margin-top: 0.3rem;
+}
+
+.separator span:before {
+  margin-right: 1rem;
+}
+
+.separator span:after {
+  margin-left: 1rem;
+}
