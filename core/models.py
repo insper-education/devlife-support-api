@@ -7,11 +7,31 @@ class User(AbstractUser):
     pass
 
 
+class StudentManager(models.Manager):
+    def get_queryset(self):
+        return User.objects.filter(is_staff=False)
+
+
 class Student(User):
-    pass
+    objects = StudentManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Student'
+
+
+class InstructorManager(models.Manager):
+    def get_queryset(self):
+        return User.objects.filter(is_staff=True)
 
 
 class Instructor(User):
+    objects = InstructorManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Instructor'
+
     def save(self, *args, **kwargs):
         self.is_staff = True
         return super().save(*args, **kwargs)
