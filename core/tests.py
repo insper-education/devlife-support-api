@@ -1,5 +1,5 @@
 from rest_framework import views
-from core.permissions import IsEnrolledInOffering
+from core.permissions import IsEnrolledInOfferingOrIsStaff
 from pathlib import Path
 from django.http import Http404
 from django.test import TestCase
@@ -119,7 +119,7 @@ class TokenCreationTest(TestCase):
 
 class IsEnrolledPermisson(TestCase):
     def setUp(self):
-        self.permission = IsEnrolledInOffering()
+        self.permission = IsEnrolledInOfferingOrIsStaff()
 
         self.prof1 = Instructor.objects.create_user(
             username='prof1',

@@ -15,7 +15,7 @@ class IsAdminOrSelf(IsAdminUser):
         return False
 
 
-class IsEnrolledInOffering(IsAuthenticated):
+class IsEnrolledInOfferingOrIsStaff(IsAuthenticated):
     def has_permission(self, request, view):
         if not request.user:
             return False
