@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import ExerciseViewSet
+from .views import ExerciseViewSet ,list_summaries, list_summaries_for_exercise
 
 
 class AnswerSignalTestCase(TestCase):
@@ -106,6 +106,7 @@ class AnswerSignalTestCase(TestCase):
         self.assert_sumary(self.exercise1, 0, 0, None)
         self.assert_sumary(self.exercise2, 0.8, 1, answers2[-1].id)
 
+
 class TokenCreationTest(TestCase):
     def test_token_creation_for_student(self):
         st = Student.objects.create_user(username='df', password='asd')
@@ -198,6 +199,22 @@ class IsEnrolledPermisson(TestCase):
             })
         resp = viewset(req_create, off_pk=1)
         assert resp.status_code >= 200, 'Instructor should be able to create exercises'
+
+    def test_student_list_summaries_enrolled(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/summaries/')
+        force_authenticate(req_list, self.student1)
+
+        resp = list_summaries(req_list, off_pk=1)
+        assert resp.status_code == 200
+
+    def test_student_list_summaries_not_enrolled(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/5/summaries/')
+        force_authenticate(req_list, self.student1)
+
+        resp = list_summaries(req_list, off_pk=5)
+        assert resp.status_code != 200
 
     
 class StudentAndInstructorTests(TestCase):
