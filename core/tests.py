@@ -6,6 +6,7 @@ from django.test import TestCase
 from core.models import Course, Enrollment, Instructor, Offering, Student, Teaches, Exercise, Answer, User, UserAnswerSummary
 from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, force_authenticate
+from rest_framework.authtoken.models import Token
 
 from .views import ExerciseViewSet
 
@@ -105,22 +106,31 @@ class AnswerSignalTestCase(TestCase):
         self.assert_sumary(self.exercise1, 0, 0, None)
         self.assert_sumary(self.exercise2, 0.8, 1, answers2[-1].id)
 
+class TokenCreationTest(TestCase):
+    def test_token_creation_for_student(self):
+        st = Student.objects.create_user(username='df', password='asd')
+        assert Token.objects.get(user=st)
+    
+    def test_token_creation_for_instructor(self):
+        st = Instructor.objects.create_user(username='df', password='asd')
+        assert Token.objects.get(user=st)
+
 
 class IsEnrolledPermisson(TestCase):
     def setUp(self):
         self.permission = IsEnrolledInOffering()
 
-        self.prof1 = Instructor.objects.create(
+        self.prof1 = Instructor.objects.create_user(
             username='prof1',
             password='12'
         )
 
-        self.student1 = Student.objects.create(
+        self.student1 = Student.objects.create_user(
             username='student1',
             password='12'
         )
 
-        self.student2 = Student.objects.create(
+        self.student2 = Student.objects.create_user(
             username='student2',
             password='12'
         )
@@ -192,8 +202,8 @@ class IsEnrolledPermisson(TestCase):
     
 class StudentAndInstructorTests(TestCase):
     def test_instructor_always_staff(self):
-        self.prof1 = Instructor.objects.create(
-            username='prof1',
+        self.prof1 = Instructor.objects.create_user(
+            username='prof12',
             password='12'
         )
         assert self.prof1.is_staff == True
