@@ -6,6 +6,7 @@
   "Instructor Dashboard": "Dashboard do Professor",
   "Sign in": "Entrar",
   "Sign up": "Criar conta",
+  "Ask the instructor to sign you up": "Se não tiver recebido um e-mail com o link de cadastro, peça para o seu professor enviá-lo novamente.",
   "username is a required field": "Campo obrigatório",
   "password is a required field": "Campo obrigatório",
   "Invalid credentials": "Usuário ou senha inválidos",

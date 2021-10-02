@@ -17,9 +17,9 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/', include('core.urls')),
-    re_path('.*', include('frontend.urls')),
+    path("admin/", admin.site.urls),
+    path("api-auth/", include("rest_framework.urls")),
+    path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/", include("core.urls")),
+    re_path(".*", include("frontend.urls")),
 ]

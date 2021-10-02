@@ -1,50 +1,45 @@
-from rest_framework import views
 from core.permissions import IsEnrolledInOfferingOrIsStaff
 from pathlib import Path
+from django.utils.translation import gettext as _
+from django.conf import settings
+from django.core import mail
 from django.http import Http404
 from django.test import TestCase
 from core.models import Course, Enrollment, Instructor, Offering, Student, Teaches, Exercise, Answer, User, UserAnswerSummary
 from unittest.mock import MagicMock
-from rest_framework.test import APIRequestFactory, force_authenticate
+from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import ExerciseViewSet ,list_summaries, list_summaries_for_exercise
+from .views import ExerciseViewSet ,list_summaries
 
 
 class AnswerSignalTestCase(TestCase):
     def setUp(self):
-        self.student = Student.objects.create_user(
-            username='john.doe',
-            password='1234'
-        )
+        self.student = Student.objects.create_user(username="john.doe", password="1234")
         self.instructor = Instructor.objects.create_user(
-            username='bill.doors',
-            password='4567'
+            username="bill.doors", password="4567"
         )
-        self.course = Course.objects.create(name='Walls OS')
+        self.course = Course.objects.create(name="Walls OS")
         self.offering = Offering.objects.create(
-            course=self.course,
-            description='Introduction to Walls OS'
+            course=self.course, description="Introduction to Walls OS"
         )
         self.enrollment = Enrollment.objects.create(
-            student=self.student,
-            offering=self.offering
+            student=self.student, offering=self.offering
         )
         self.teaches = Teaches.objects.create(
-            instructor=self.instructor,
-            offering=self.offering
+            instructor=self.instructor, offering=self.offering
         )
         self.exercise1 = Exercise.objects.create(
             offering=self.offering,
-            slug='walls-exercise-1',
-            url='bill.doors.com/walls/',
-            type=Exercise.ExerciseType.CODE
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
         )
         self.exercise2 = Exercise.objects.create(
             offering=self.offering,
-            slug='walls-exercise-2',
-            url='bill.doors.com/walls/',
-            type=Exercise.ExerciseType.CODE
+            slug="walls-exercise-2",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
         )
 
     def create_answer(self, exercise, points):
@@ -52,8 +47,8 @@ class AnswerSignalTestCase(TestCase):
             user=self.student,
             exercise=exercise,
             points=points,
-            summary='{}',
-            long_answer='{}',
+            summary="{}",
+            long_answer="{}",
         )
 
     def assert_sumary(self, exercise, max_points, count, latest_id):
@@ -111,7 +106,7 @@ class TokenCreationTest(TestCase):
     def test_token_creation_for_student(self):
         st = Student.objects.create_user(username='df', password='asd')
         assert Token.objects.get(user=st)
-    
+
     def test_token_creation_for_instructor(self):
         st = Instructor.objects.create_user(username='df', password='asd')
         assert Token.objects.get(user=st)
@@ -164,7 +159,7 @@ class IsEnrolledPermisson(TestCase):
         request = MagicMock(user=self.prof1)
         view = MagicMock(kwargs={'off_pk': self.offering.pk})
         assert self.permission.has_permission(request, view) == True
-    
+
     def test_student_list_create_exercises_in_offering(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/')
@@ -220,7 +215,7 @@ class IsEnrolledPermisson(TestCase):
         resp = list_summaries(req_list, off_pk=5)
         assert resp.status_code != 200
 
-    
+
 class StudentAndInstructorTests(TestCase):
     def test_instructor_always_staff(self):
         self.prof1 = Instructor.objects.create_user(
@@ -228,3 +223,68 @@ class StudentAndInstructorTests(TestCase):
             password='12'
         )
         assert self.prof1.is_staff == True
+
+
+class PasswordResetEmailTestCase(APITestCase):
+    def create_user(self, with_email=True):
+        kwargs = {
+            "first_name": "Leeroy",
+            "last_name": "Jenkins",
+            "username": "leeroyj",
+            "password": User.objects.make_random_password(),
+        }
+        if with_email:
+            kwargs["email"] = "leeroyj@al.insper.edu.br"
+        return User.objects.create_user(**kwargs)
+
+    def assert_reset_email(self, email, expected_subject, user):
+        self.assertEqual(email.subject, expected_subject)
+        self.assertEqual(email.from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertListEqual(email.to, [user.email])
+        self.assertIn("/password-reset/", email.body)
+
+    def test_send_password_reset_email_api_endpoint(self):
+        user = self.create_user()
+        mail.outbox = []  # Creating a user triggers a password reset email
+
+        response = self.client.post(
+            "/api/auth/password/reset/?first_time=true",
+            {"email": user.email},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post("/api/auth/password/reset/", {"email": user.email})
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(len(mail.outbox), 2)
+
+        expected_emails = [
+            (_("[DevLife] Set password")),
+            (_("[DevLife] Password reset")),
+        ]
+        for (expected_subject), email in zip(expected_emails, mail.outbox):
+            self.assert_reset_email(email, expected_subject, user)
+
+    def test_send_password_reset_email_when_user_is_created(self):
+        user = self.create_user()
+
+        user.name = "Leeeeeroy"
+        user.save()
+
+        user.password_email_sent = False
+        user.save()
+
+        self.assertEqual(len(mail.outbox), 2)
+        for email in mail.outbox:
+            self.assert_reset_email(email, _("[DevLife] Set password"), user)
+
+    def test_send_password_reset_email_when_user_receives_email(self):
+        user = self.create_user(with_email=False)
+
+        user.email = "leeroyj@al.insper.edu.br"
+        user.save()
+
+        self.assertEqual(len(mail.outbox), 1)
+        for email in mail.outbox:
+            self.assert_reset_email(email, _("[DevLife] Set password"), user)

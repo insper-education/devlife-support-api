@@ -111,7 +111,11 @@ const Login = () => {
             {!!params.get("reason") && (
               <ErrorMessage>{t(params.get("reason") || "")}</ErrorMessage>
             )}
-            <Button className="mt-2 w-full" type="submit" disabled={loading}>
+            <Button
+              variant="secondary"
+              className="mt-2 w-full"
+              type="submit"
+              disabled={loading}>
               {t("Sign in")}
             </Button>
             {loading && (
@@ -121,13 +125,7 @@ const Login = () => {
             )}
           </Form>
           <Separator>OU</Separator>
-          <Button
-            variant="secondary"
-            className="mt-2 w-full"
-            type="submit"
-            disabled={loading}>
-            {t("Sign up")}
-          </Button>
+          <p>{t("Ask the instructor to sign you up")}</p>
         </div>
       </div>
     </div>
