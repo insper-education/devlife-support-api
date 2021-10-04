@@ -179,9 +179,11 @@ class IsEnrolledPermisson(TestCase):
                 'type': 'code',
                 'topic': 'while',
                 'group': 'gg',
+                'slug': 'a-b-c'
             })
+        force_authenticate(req_create, self.student1)
         resp = viewset(req_create, off_pk=1)
-        assert resp.status_code == 401, 'Student should not be able to create exercises'
+        assert resp.status_code == 403, 'Student should not be able to create exercises'
 
     def test_instructor_list_create_exercises_in_offering(self):
         fac = APIRequestFactory()
@@ -196,9 +198,11 @@ class IsEnrolledPermisson(TestCase):
                 'type': 'code',
                 'topic': 'while',
                 'group': 'gg',
+                'slug': 'a-b-c'
             })
+        force_authenticate(req_create, self.prof1)
         resp = viewset(req_create, off_pk=1)
-        assert resp.status_code >= 200, 'Instructor should be able to create exercises'
+        assert resp.status_code == 201, 'Instructor should be able to create exercises'
 
     def test_student_list_summaries_enrolled(self):
         fac = APIRequestFactory()

@@ -19,7 +19,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ExerciseSerializer
-    permission_classes = [IsEnrolledInOfferingOrIsStaff]
+    
+    def get_permissions(self):
+        permissions = [IsAdminUser]
+        if self.action == 'list':
+            permissions = [IsEnrolledInOfferingOrIsStaff] 
+
+        return [permission() for permission in permissions] 
 
     def create(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
@@ -33,7 +39,7 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
             })
 
         s = ExerciseSerializer(exercise)
-        return Response(s.data)
+        return Response(s.data, status=status.HTTP_201_CREATED)
 
     def list(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
@@ -43,7 +49,7 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
 
 class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
-    permission_classes = [IsAdminUser|IsEnrolledInOfferingOrIsStaff]
+    permission_classes = [IsEnrolledInOfferingOrIsStaff]
 
     def get_queryset(self):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
