@@ -2,13 +2,13 @@ from django import http
 from django.http.response import Http404
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
 from .models import Answer, Offering, User, Exercise, UserAnswerSummary
 from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
-from .permissions import IsAdminOrSelf, IsAdminUser
+from .permissions import IsAdminOrSelf, IsAdminUser, IsEnrolledInOfferingOrIsStaff
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -19,7 +19,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ExerciseSerializer
-    permission_classes = [IsAdminUser]
+    
+    def get_permissions(self):
+        permissions = [IsAdminUser]
+        if self.action == 'list':
+            permissions = [IsEnrolledInOfferingOrIsStaff] 
+
+        return [permission() for permission in permissions] 
 
     def create(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
@@ -33,7 +39,7 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
             })
 
         s = ExerciseSerializer(exercise)
-        return Response(s.data)
+        return Response(s.data, status=status.HTTP_201_CREATED)
 
     def list(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
@@ -43,7 +49,7 @@ class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.G
 
 class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsEnrolledInOfferingOrIsStaff]
 
     def get_queryset(self):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
@@ -84,6 +90,7 @@ def user_filter(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
 def list_summaries(request, off_pk):
     get_object_or_404(Offering, pk=off_pk)
 
@@ -95,6 +102,7 @@ def list_summaries(request, off_pk):
 
 
 @api_view(['GET'])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
 def list_summaries_for_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
     exercise = get_object_or_404(Exercise, slug=ex_slug)

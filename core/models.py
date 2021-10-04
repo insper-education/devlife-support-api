@@ -1,17 +1,40 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils import timezone
 
 
 class User(AbstractUser):
     pass
 
+
+class StudentManager(UserManager):
+    def get_queryset(self):
+        return User.objects.filter(is_staff=False)
+
+
 class Student(User):
-    pass
+    objects = StudentManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Student'
+
+
+class InstructorManager(UserManager):
+    def get_queryset(self):
+        return User.objects.filter(is_staff=True)
 
 
 class Instructor(User):
-    pass
+    objects = InstructorManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Instructor'
+
+    def save(self, *args, **kwargs):
+        self.is_staff = True
+        return super().save(*args, **kwargs)
 
 
 class Course(models.Model):
@@ -30,12 +53,12 @@ class Offering(models.Model):
 
 
 class Enrollment(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
 
 
 class Teaches(models.Model):
-    instructor = models.ForeignKey(Instructor, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE)
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
 
 
