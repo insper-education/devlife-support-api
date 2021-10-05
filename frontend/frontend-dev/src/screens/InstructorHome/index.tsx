@@ -5,7 +5,7 @@ import Title from "../../components/Title";
 import { useUser } from "../../contexts/user-context";
 import ExerciseDetails from "../../fragments/ExerciseDetails";
 import Header from "../../fragments/Header";
-import { Exercise } from "../../models/Exercise";
+import { IExercise } from "../../models/Exercise";
 import { useExerciseList } from "../../services/exercises";
 
 const InstructorHome = () => {
@@ -24,7 +24,7 @@ const InstructorHome = () => {
       <Container>
         <Title>{t("Instructor Dashboard")}</Title>
         <div className="grid gap-1 grid-cols-3 mt-4">
-          {exerciseList.map((item: Exercise) => (
+          {exerciseList.map((item: IExercise) => (
             <ExerciseDetails
               key={`exercise-${item.slug}`}
               offering={offering}

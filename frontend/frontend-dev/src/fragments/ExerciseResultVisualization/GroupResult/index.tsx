@@ -1,15 +1,15 @@
 import React from "react";
 import ProgressCheck from "../../../components/ProgressCheck";
 import Title from "../../../components/Title";
-import { ExerciseGroups } from "../../../models/Exercise";
-import { CompletionRates } from "../service";
+import { IExerciseGroups } from "../../../models/Exercise";
+import { ICompletionRates } from "../service";
 
-interface GroupResultProps {
-  group: ExerciseGroups;
-  completionRates: CompletionRates;
+interface IGroupResultProps {
+  group: IExerciseGroups;
+  completionRates: ICompletionRates;
 }
 
-const GroupResult = ({ group, completionRates }: GroupResultProps) => {
+const GroupResult = ({ group, completionRates }: IGroupResultProps) => {
   const groupName = Object.keys(group)[0];
   return (
     <>

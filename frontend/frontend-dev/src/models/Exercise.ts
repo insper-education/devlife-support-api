@@ -1,4 +1,4 @@
-export interface Exercise {
+export interface IExercise {
   pk: number;
   slug: string;
   url: string;
@@ -8,11 +8,11 @@ export interface Exercise {
   group: string;
 }
 
-export interface ExerciseGroups {
-  [url: string]: Exercise[];
+export interface IExerciseGroups {
+  [url: string]: IExercise[];
 }
-export const groupByURL = (exercises: Exercise[]): ExerciseGroups => {
-  const groups: ExerciseGroups = {};
+export const groupByURL = (exercises: IExercise[]): IExerciseGroups => {
+  const groups: IExerciseGroups = {};
 
   exercises.forEach((exercise) => {
     if (!groups[exercise.url]) groups[exercise.url] = [];
@@ -22,14 +22,14 @@ export const groupByURL = (exercises: Exercise[]): ExerciseGroups => {
   return groups;
 };
 
-export interface TopicContentExercises {
-  [url: string]: ExerciseGroups;
+export interface ITopicContentExercises {
+  [url: string]: IExerciseGroups;
 }
 
 export const groupByTopicAndContent = (
-  exercises: Exercise[],
-): TopicContentExercises => {
-  const groups: TopicContentExercises = {};
+  exercises: IExercise[],
+): ITopicContentExercises => {
+  const groups: ITopicContentExercises = {};
 
   exercises.forEach((exercise) => {
     const { topic, group } = exercise;

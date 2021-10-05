@@ -8,19 +8,19 @@ import ExerciseResultVisualization from "../../fragments/ExerciseResultVisualiza
 import Header from "../../fragments/Header";
 import {
   groupByTopicAndContent,
-  TopicContentExercises,
+  ITopicContentExercises,
 } from "../../models/Exercise";
 import {
   summaryListToMap,
-  UserAnswerSummary,
-  UserAnswerSummaryMap,
+  IUserAnswerSummary,
+  IUserAnswerSummaryMap,
 } from "../../models/UserAnswerSummary";
 import { useExerciseList, useSummaryList } from "../../services/exercises";
 
 const StudentHome = () => {
   const { t } = useTranslation();
   const { user } = useUser();
-  const [exerciseGroups, setExerciseGroups] = useState<TopicContentExercises>(
+  const [exerciseGroups, setExerciseGroups] = useState<ITopicContentExercises>(
     {},
   );
 
@@ -37,7 +37,7 @@ const StudentHome = () => {
     token,
     user?.pk,
   );
-  const [summaryMap, setSummaryMap] = useState<UserAnswerSummaryMap>({});
+  const [summaryMap, setSummaryMap] = useState<IUserAnswerSummaryMap>({});
   useEffect(() => {
     if (loadingSummaryList) return;
     setSummaryMap(summaryListToMap(summaryList));

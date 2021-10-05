@@ -1,11 +1,11 @@
 import axios from "axios";
-import { User } from "../../models/User";
+import { IUser } from "../../models/User";
 import { LOGIN_PATH, USER_DATA_PATH } from "../routes";
 
 export const login = async (
   username: string,
   password: string
-): Promise<User | null> => {
+): Promise<IUser | null> => {
   return axios
     .post(LOGIN_PATH, { username, password })
     .then((res) => res.data.key)
@@ -34,11 +34,11 @@ export const login = async (
 };
 
 const USER_KEY = "devlife-user-data";
-export const storeUser = (user: User | null) => {
+export const storeUser = (user: IUser | null) => {
   if (!!user) localStorage.setItem(USER_KEY, JSON.stringify(user));
   else localStorage.removeItem(USER_KEY);
 };
-export const retrieveUser = (): User | null => {
+export const retrieveUser = (): IUser | null => {
   const loadedString = localStorage.getItem(USER_KEY);
   if (!!loadedString) return JSON.parse(loadedString);
   return null;

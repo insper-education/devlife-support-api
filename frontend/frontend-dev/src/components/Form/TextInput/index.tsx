@@ -2,7 +2,7 @@ import React, { forwardRef, HTMLProps } from "react";
 import ErrorMessage from "../ErrorMessage";
 import Label from "../Label";
 
-interface TextInputProps {
+interface ITextInputProps {
   inputId: string;
   label?: string;
   placeholder?: string;
@@ -16,7 +16,7 @@ const defaultProps = {
 
 const TextInput = forwardRef<
   HTMLInputElement,
-  TextInputProps & HTMLProps<HTMLInputElement>
+  ITextInputProps & HTMLProps<HTMLInputElement>
 >((props, ref) => {
   const {
     error,

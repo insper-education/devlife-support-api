@@ -1,15 +1,15 @@
 import React from "react";
 import ProgressCheck from "../../../components/ProgressCheck";
 import Title from "../../../components/Title";
-import { TopicContentExercises } from "../../../models/Exercise";
-import { CompletionRates } from "../service";
+import { ITopicContentExercises } from "../../../models/Exercise";
+import { ICompletionRates } from "../service";
 
-interface TopicResultProps {
-  topic: TopicContentExercises;
-  completionRates: CompletionRates;
+interface ITopicResultProps {
+  topic: ITopicContentExercises;
+  completionRates: ICompletionRates;
 }
 
-const TopicResult = ({ topic, completionRates }: TopicResultProps) => {
+const TopicResult = ({ topic, completionRates }: ITopicResultProps) => {
   const topicName = Object.keys(topic)[0];
   return (
     <>

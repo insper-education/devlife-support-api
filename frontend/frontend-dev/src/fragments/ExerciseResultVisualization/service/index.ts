@@ -1,18 +1,18 @@
 import {
-  Exercise,
-  ExerciseGroups,
-  TopicContentExercises,
+  IExercise,
+  IExerciseGroups,
+  ITopicContentExercises,
 } from "../../../models/Exercise";
-import { UserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
+import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 
-export interface CompletionRates {
+export interface ICompletionRates {
   [name: string]: number;
 }
 
 export const extractCompletionRatesFromExercises = (
-  exercises: Exercise[],
-  answerSummaries: UserAnswerSummaryMap,
-): CompletionRates => {
+  exercises: IExercise[],
+  answerSummaries: IUserAnswerSummaryMap,
+): ICompletionRates => {
   return Object.fromEntries(
     exercises.map((exercise) => {
       const summary = answerSummaries[exercise.pk];
@@ -22,9 +22,9 @@ export const extractCompletionRatesFromExercises = (
 };
 
 export const extractCompletionRatesFromExerciseGroups = (
-  exercises: ExerciseGroups,
-  answerSummaries: UserAnswerSummaryMap,
-): CompletionRates => {
+  exercises: IExerciseGroups,
+  answerSummaries: IUserAnswerSummaryMap,
+): ICompletionRates => {
   return Object.fromEntries(
     Object.keys(exercises).map((name) => {
       const rates = Object.values(
@@ -36,9 +36,9 @@ export const extractCompletionRatesFromExerciseGroups = (
 };
 
 export const extractCompletionRatesFromTopicContents = (
-  exercises: TopicContentExercises,
-  answerSummaries: UserAnswerSummaryMap,
-): CompletionRates => {
+  exercises: ITopicContentExercises,
+  answerSummaries: IUserAnswerSummaryMap,
+): ICompletionRates => {
   return Object.assign(
     {},
     ...Object.keys(exercises).map((name) => {

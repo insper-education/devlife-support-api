@@ -6,25 +6,25 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { User } from "../../models/User";
+import { IUser } from "../../models/User";
 import { retrieveUser, storeUser } from "../../services/auth";
 
-interface UserContextType {
-  user: User | null;
-  putUser: (user: User) => void;
+interface IUserContextType {
+  user: IUser | null;
+  putUser: (user: IUser) => void;
   removeUser: () => void;
 }
 
-export const UserContext = createContext<UserContextType>({
+export const UserContext = createContext<IUserContextType>({
   user: null,
   putUser: () => {},
   removeUser: () => {},
 });
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(retrieveUser());
+  const [user, setUser] = useState<IUser | null>(retrieveUser());
 
-  const logUserIn = (user: User) => {
+  const logUserIn = (user: IUser) => {
     storeUser(user);
     setUser(user);
   };
@@ -39,7 +39,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!user) {
-      const loadedUser: User | null = retrieveUser();
+      const loadedUser: IUser | null = retrieveUser();
       if (!!loadedUser) logUserIn(loadedUser);
     }
   }, [user]);
@@ -56,7 +56,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useUser = (): UserContextType => {
+export const useUser = (): IUserContextType => {
   const { user, putUser, removeUser } = useContext(UserContext);
   return { user, putUser, removeUser };
 };

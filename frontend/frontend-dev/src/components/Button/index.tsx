@@ -1,6 +1,6 @@
 import React, { HTMLProps } from "react";
 
-interface ButtonProps {
+interface IButtonProps {
   className: string;
   variant: "primary" | "secondary" | "hidden";
   type: "button" | "submit" | "reset" | undefined;
@@ -19,7 +19,7 @@ const Button = ({
   type,
   disabled,
   className,
-}: ButtonProps & HTMLProps<HTMLButtonElement>) => {
+}: IButtonProps & HTMLProps<HTMLButtonElement>) => {
   const variantClasses = {
     primary: disabled
       ? "bg-gray-300 text-gray-500 cursor-default"

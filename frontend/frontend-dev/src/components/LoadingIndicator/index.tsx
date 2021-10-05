@@ -31,12 +31,12 @@ const DotTransition: Transition = {
   ease: "easeInOut",
 };
 
-interface LoadingIndicatorProps {
+interface ILoadingIndicatorProps {
   className?: string;
   light?: boolean;
 }
 
-const LoadingIndicator = ({ light, className }: LoadingIndicatorProps) => {
+const LoadingIndicator = ({ light, className }: ILoadingIndicatorProps) => {
   const dotClasses = `${styles.loadingDot} ${
     light ? styles.light : styles.dark
   }`;

@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Form from "../../components/Form";
 import { useTranslation } from "react-i18next";
 import Button from "../../components/Button";
-import { schema, LoginInputs } from "./login-schema";
+import { schema, ILoginInputs } from "./login-schema";
 import { login } from "../../services/auth";
 import { useUser } from "../../contexts/user-context";
 import ErrorMessage from "../../components/Form/ErrorMessage";
@@ -41,11 +41,11 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInputs>({
+  } = useForm<ILoginInputs>({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: LoginInputs) => {
+  const onSubmit = (data: ILoginInputs) => {
     setLoading(true);
     login(data.username, data.password)
       .then((user) => {
