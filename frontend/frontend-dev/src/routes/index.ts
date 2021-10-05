@@ -1,5 +1,5 @@
 import { RouteProps } from "react-router";
-import { User } from "../models/User";
+import { IUser } from "../models/User";
 import ExerciseAnswers from "../screens/ExerciseAnswers";
 import InstructorHome from "../screens/InstructorHome";
 import Login from "../screens/Login";
@@ -12,13 +12,13 @@ export enum routes {
   LOGIN = "/login"
 }
 
-interface RouteData {
+interface IRouteData {
   title: string;
-  permissionTest?: (user: User | null) => boolean;
+  permissionTest?: (user: IUser | null) => boolean;
   props: RouteProps;
 }
 
-export const routesData: { [route: string]: RouteData } = {};
+export const routesData: { [route: string]: IRouteData } = {};
 routesData[routes.STUDENT_HOME] = {
   title: "Student Dashboard",
   props: {
@@ -29,7 +29,7 @@ routesData[routes.STUDENT_HOME] = {
 };
 routesData[routes.INSTRUCTOR_HOME] = {
   title: "Instructor Dashboard",
-  permissionTest: (user: User | null): boolean => !!user?.isStaff,
+  permissionTest: (user: IUser | null): boolean => !!user?.isStaff,
   props: {
     path: routes.INSTRUCTOR_HOME,
     exact: true,
@@ -38,7 +38,7 @@ routesData[routes.INSTRUCTOR_HOME] = {
 };
 routesData[routes.EXERCISE_ANSWERS] = {
   title: "Exercise Answers",
-  permissionTest: (user: User | null): boolean => !!user?.isStaff,
+  permissionTest: (user: IUser | null): boolean => !!user?.isStaff,
   props: {
     path: routes.EXERCISE_ANSWERS,
     exact: true,

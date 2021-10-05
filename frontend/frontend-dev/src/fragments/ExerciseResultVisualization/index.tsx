@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Exercise,
-  ExerciseGroups,
-  TopicContentExercises,
+  IExercise,
+  IExerciseGroups,
+  ITopicContentExercises,
 } from "../../models/Exercise";
-import { UserAnswerSummaryMap } from "../../models/UserAnswerSummary";
+import { IUserAnswerSummaryMap } from "../../models/UserAnswerSummary";
 import Column from "./Column";
 import ResultColumn from "./ResultColumn";
 import {
-  CompletionRates,
+  ICompletionRates,
   extractCompletionRatesFromExerciseGroups,
   extractCompletionRatesFromExercises,
   extractCompletionRatesFromTopicContents,
 } from "./service";
 
-interface ExerciseResultVisualizationProps {
-  exerciseGroups: TopicContentExercises;
-  summaryMap: UserAnswerSummaryMap;
+interface IExerciseResultVisualizationProps {
+  exerciseGroups: ITopicContentExercises;
+  summaryMap: IUserAnswerSummaryMap;
   className?: string;
 }
 
@@ -25,7 +25,7 @@ const ExerciseResultVisualization = ({
   exerciseGroups,
   summaryMap,
   className,
-}: ExerciseResultVisualizationProps) => {
+}: IExerciseResultVisualizationProps) => {
   const { t } = useTranslation();
   const [topic, setTopic] = useState<string>("");
   const [contentGroup, setContentGroup] = useState<string>("");
@@ -33,18 +33,18 @@ const ExerciseResultVisualization = ({
   const [
     topicCompletionRates,
     setTopicCompletionRates,
-  ] = useState<CompletionRates>({});
+  ] = useState<ICompletionRates>({});
   useEffect(() => {
     setTopicCompletionRates(
       extractCompletionRatesFromTopicContents(exerciseGroups, summaryMap),
     );
   }, [exerciseGroups, summaryMap]);
 
-  const [contentGroups, setContentGroups] = useState<ExerciseGroups>({});
+  const [contentGroups, setContentGroups] = useState<IExerciseGroups>({});
   const [
     groupCompletionRates,
     setGroupCompletionRates,
-  ] = useState<CompletionRates>({});
+  ] = useState<ICompletionRates>({});
   useEffect(() => {
     const groups = topic ? exerciseGroups[topic] : {};
     setContentGroups(groups);
@@ -58,7 +58,7 @@ const ExerciseResultVisualization = ({
   const [
     exerciseCompletionRates,
     setExerciseCompletionRates,
-  ] = useState<CompletionRates>({});
+  ] = useState<ICompletionRates>({});
   useEffect(() => {
     const exerciseList = contentGroups[contentGroup];
     setExercises(
@@ -77,7 +77,7 @@ const ExerciseResultVisualization = ({
   const [selectedExerciseRow, setSelectedExerciseRow] = useState<number>(-1);
   const [selectedLevel, setSelectedLevel] = useState<number>(0);
   const [selectedData, setSelectedData] = useState<
-    Exercise | ExerciseGroups | TopicContentExercises | null
+    IExercise | IExerciseGroups | ITopicContentExercises | null
   >(null);
   const handleSelectTopic = (topic: string, idx: number) => {
     setTopic(topic);

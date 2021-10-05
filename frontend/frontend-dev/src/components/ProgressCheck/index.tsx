@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-interface ProgressCheckProps {
+interface IProgressCheckProps {
   className?: string;
   progress: number; // Should be in [0.0, 1.0]
 }
@@ -10,7 +10,7 @@ const defaultProps = {
   progress: 1,
 };
 
-const ProgressCheck = ({ className, progress }: ProgressCheckProps) => {
+const ProgressCheck = ({ className, progress }: IProgressCheckProps) => {
   const length = 2 * 90 * Math.PI;
   if (progress < 0) progress = 0;
   if (progress > 1) progress = 1;

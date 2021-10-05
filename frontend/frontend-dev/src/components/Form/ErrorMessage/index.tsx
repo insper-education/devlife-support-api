@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 
-interface ErrorMessageProps {
+interface IErrorMessageProps {
   children: ReactNode;
 }
 
-const ErrorMessage = ({ children }: ErrorMessageProps) => {
+const ErrorMessage = ({ children }: IErrorMessageProps) => {
   return <p className="text-red-500 text-xs italic">{children}</p>;
 };
 

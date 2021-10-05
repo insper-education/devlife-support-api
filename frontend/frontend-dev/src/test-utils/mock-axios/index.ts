@@ -4,7 +4,7 @@ jest.mock("axios");
 
 const mockAxios = axios as jest.Mocked<typeof axios>;
 
-interface UserServerData {
+interface IUserServerData {
   data: {
     pk: number;
     username: string;
@@ -16,7 +16,7 @@ interface UserServerData {
   token: string;
 }
 
-export const createAdminUserServerData = (): UserServerData => {
+export const createAdminUserServerData = (): IUserServerData => {
   return {
     data: {
       pk: 1,
@@ -30,7 +30,7 @@ export const createAdminUserServerData = (): UserServerData => {
   };
 };
 
-export const createStudentUserServerData = (): UserServerData => {
+export const createStudentUserServerData = (): IUserServerData => {
   return {
     data: {
       pk: 2,
@@ -56,14 +56,14 @@ export const authorizedToken = (token: string) => (config: {
 export const NOT_FOUND = { status: 404, msg: "404 - NOT FOUND" };
 export const BAD_REQUEST = { status: 400, msg: "400 - BAD REQUEST" };
 
-interface ArgsResponse {
+interface IArgsResponse {
   accept: (args: any) => boolean;
   response: any;
 }
 
 export const setupMockAxios = (ignoreIfNotFound?: boolean) => {
   const pathArgs: {
-    [method: string]: { [path: string]: Array<ArgsResponse> };
+    [method: string]: { [path: string]: Array<IArgsResponse> };
   } = {
     post: {},
     get: {},

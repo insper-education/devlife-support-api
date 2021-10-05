@@ -1,12 +1,12 @@
 import React from "react";
 import ProgressCheck from "../../../components/ProgressCheck";
 import Title from "../../../components/Title";
-import { CompletionRates } from "../service";
+import { ICompletionRates } from "../service";
 
-interface ColumnProps {
+interface IColumnProps {
   title: string;
   options: string[];
-  completionRates: CompletionRates;
+  completionRates: ICompletionRates;
   selectedRow: number;
   onSelect?: (option: string, index: number) => void;
 }
@@ -17,7 +17,7 @@ const Column = ({
   title,
   completionRates,
   selectedRow,
-}: ColumnProps) => {
+}: IColumnProps) => {
   const handleClick = (idx: number) => {
     onSelect && onSelect(options[idx], idx);
   };

@@ -4,11 +4,11 @@ import {
   extractCompletionRatesFromTopicContents,
 } from ".";
 import {
-  Exercise,
-  ExerciseGroups,
-  TopicContentExercises,
+  IExercise,
+  IExerciseGroups,
+  ITopicContentExercises,
 } from "../../../models/Exercise";
-import { UserAnswerSummary } from "../../../models/UserAnswerSummary";
+import { IUserAnswerSummary } from "../../../models/UserAnswerSummary";
 
 const createExercises = (
   points: number[],
@@ -16,7 +16,7 @@ const createExercises = (
   url: string,
   topic: string,
   contentGroup: string,
-): Exercise[] => {
+): IExercise[] => {
   return points.map((p, idx) => ({
     pk: startPk + idx,
     slug: `exercise-${startPk + idx}`,
@@ -29,7 +29,7 @@ const createExercises = (
 };
 
 const createSummaries = (
-  exercises: Exercise[],
+  exercises: IExercise[],
   points: number[],
   startPk: number,
 ) => {
@@ -50,8 +50,8 @@ const createGroups = (
   groups: number[],
   groupPoints: number[][],
   topic: string,
-): [ExerciseGroups, UserAnswerSummary[]] => {
-  const answerSummaries: UserAnswerSummary[] = [];
+): [IExerciseGroups, IUserAnswerSummary[]] => {
+  const answerSummaries: IUserAnswerSummary[] = [];
   const exerciseGroups = Object.fromEntries(
     groups.map((groupId, idx) => {
       const points = groupPoints[idx];
@@ -77,9 +77,9 @@ const createTopics = (
   topics: number[],
   allGroups: number[][],
   allGroupPoints: number[][][],
-): [TopicContentExercises, UserAnswerSummary[]] => {
-  const answerSummaries: UserAnswerSummary[] = [];
-  const topicGroups: TopicContentExercises = Object.fromEntries(
+): [ITopicContentExercises, IUserAnswerSummary[]] => {
+  const answerSummaries: IUserAnswerSummary[] = [];
+  const topicGroups: ITopicContentExercises = Object.fromEntries(
     topics.map((topic, topicIdx) => {
       const [exerciseGroups, summaries] = createGroups(
         allGroups[topicIdx],

@@ -1,4 +1,4 @@
-export interface Answer {
+export interface IAnswer {
   pk: number;
   user: number;
   exercise: number;
@@ -8,6 +8,6 @@ export interface Answer {
   long_answer: any;
 }
 
-export interface CodeAnswerSummary {
+export interface ICodeAnswerSummary {
   passed: string;
 }

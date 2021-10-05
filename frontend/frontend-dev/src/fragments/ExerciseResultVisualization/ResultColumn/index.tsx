@@ -1,27 +1,27 @@
 import React from "react";
 import {
-  Exercise,
-  ExerciseGroups,
-  TopicContentExercises,
+  IExercise,
+  IExerciseGroups,
+  ITopicContentExercises,
 } from "../../../models/Exercise";
-import { UserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
+import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import CodeExerciseResult from "../CodeExerciseResult";
 import GroupResult from "../GroupResult";
-import { CompletionRates } from "../service";
+import { ICompletionRates } from "../service";
 import TopicResult from "../TopicResult";
 
-interface ResultColumnProps {
-  data: Exercise | ExerciseGroups | TopicContentExercises | null;
+interface IResultColumnProps {
+  data: IExercise | IExerciseGroups | ITopicContentExercises | null;
   offering: number;
-  summaryMap: UserAnswerSummaryMap;
-  completionRates: CompletionRates;
+  summaryMap: IUserAnswerSummaryMap;
+  completionRates: ICompletionRates;
 }
 
 const getComponent = (
   data: any,
   offering: number,
-  summaryMap: UserAnswerSummaryMap,
-  completionRates: CompletionRates,
+  summaryMap: IUserAnswerSummaryMap,
+  completionRates: ICompletionRates,
 ): React.ReactNode => {
   if (!data) return null;
 
@@ -54,7 +54,7 @@ const ResultColumn = ({
   offering,
   summaryMap,
   completionRates,
-}: ResultColumnProps) => {
+}: IResultColumnProps) => {
   return <>{getComponent(data, offering, summaryMap, completionRates)}</>;
 };
 

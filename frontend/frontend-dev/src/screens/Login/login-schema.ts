@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export interface LoginInputs {
+export interface ILoginInputs {
   username: string;
   password: string;
 }

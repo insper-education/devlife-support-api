@@ -3,21 +3,21 @@ import { useTranslation } from "react-i18next";
 import Button from "../../../components/Button";
 import Title from "../../../components/Title";
 import { useUser } from "../../../contexts/user-context";
-import { Exercise } from "../../../models/Exercise";
-import { UserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
+import { IExercise } from "../../../models/Exercise";
+import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import { useAnswer } from "../../../services/exercises";
 
-interface CodeExerciseResultProps {
+interface ICodeExerciseResultProps {
   offering: number;
-  summaryMap: UserAnswerSummaryMap;
-  exercise: Exercise;
+  summaryMap: IUserAnswerSummaryMap;
+  exercise: IExercise;
 }
 
 const CodeExerciseResult = ({
   offering,
   summaryMap,
   exercise,
-}: CodeExerciseResultProps) => {
+}: ICodeExerciseResultProps) => {
   const { t } = useTranslation();
   const { user } = useUser();
 

@@ -7,12 +7,12 @@ import { dynamicPathname } from "../../helpers";
 import { routes } from "../../routes";
 import { useSummaryListForExercise } from "../../services/exercises";
 
-interface ExerciseDetailsProps {
+interface IExerciseDetailsProps {
   offering: number;
   slug: string;
 }
 
-const ExerciseDetails = ({ offering, slug }: ExerciseDetailsProps) => {
+const ExerciseDetails = ({ offering, slug }: IExerciseDetailsProps) => {
   const { user } = useUser();
   const token = user?.token || "";
   const {
