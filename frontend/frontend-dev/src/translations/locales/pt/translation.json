@@ -1,6 +1,11 @@
 {
   "Username": "Usuário",
   "Password": "Senha",
+  "Repeat password": "Confirmar senha",
+  "Set password": "Definir senha",
+  "Reset password": "Redefinir senha",
+  "Passwords must match": "As senhas devem ser iguais",
+  "Invalid password reset link": "Link de redefinição de senha inválido. Solicite um novo link para redefinir sua senha.",
   "Type username": "Nome de usuário",
   "Student Dashboard": "Dashboard do Aluno",
   "Instructor Dashboard": "Dashboard do Professor",
@@ -22,5 +27,6 @@
   "Max points": "Pontuação",
   "Attempts": "Tentativas",
   "Tests passing": "Testes passando",
-  "Your solution": "Sua solução"
+  "Your solution": "Sua solução",
+  "or": "ou"
 }

@@ -1,51 +1,32 @@
+/* eslint-disable import/first */
 import { act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  createAdminUserServerData,
-  setupMockAxios,
-  createStudentUserServerData,
-  hasCredentials,
-  authorizedToken,
-} from "../test-utils/mock-axios"; // Mocks must come before import App
+import { setupMockAuth } from "../test-utils/mock-auth";
+jest.mock("../services/auth");
 
 import { routes } from "../routes";
-import { LOGIN_PATH, USER_DATA_PATH } from "../services/routes";
-import {
-  mockLocalStorage,
-  tearDownLocalStorage,
-} from "../test-utils/mock-local-storage";
 import {
   fillPassword,
+  fillPasswordConfirmation,
   fillUsername,
   accessPage,
   signIn,
+  clickSetPassword,
   startAt,
+  searchForMessage,
 } from "./interactions";
-
-beforeEach(() => {
-  mockLocalStorage();
-  const { whenPostReceivedOn, whenGetReceivedOn } = setupMockAxios(true);
-
-  const usersData = [
-    createAdminUserServerData(),
-    createStudentUserServerData(),
-  ];
-  usersData.forEach((userData) => {
-    whenPostReceivedOn(LOGIN_PATH)
-      .acceptIf(hasCredentials(userData.data.username, userData.data.username))
-      .andReturn({ key: userData.token });
-
-    whenGetReceivedOn(USER_DATA_PATH)
-      .acceptIf(authorizedToken(userData.token))
-      .andReturn(userData.data);
-  });
-});
-
-afterEach(() => {
-  tearDownLocalStorage();
-});
+import { dynamicPathname } from "../helpers";
+import { LOGIN_PATH } from "../services/routes";
 
 describe("App navigation", () => {
+  beforeEach(() => {
+    const { createAdminUserServerData, createStudentUserServerData } =
+      setupMockAuth();
+
+    createAdminUserServerData();
+    createStudentUserServerData();
+  });
+
   it("admin user logs in and is redirected to student dashboard", async () => {
     // Access student page while not logged in
     let history = startAt(routes.STUDENT_HOME);
@@ -82,11 +63,9 @@ describe("App navigation", () => {
     expect(history.location.pathname).toBe(routes.LOGIN);
 
     await act(async () => {
-      await act(async () => {
-        await fillUsername("student");
-        await fillPassword("student");
-        await signIn();
-      });
+      await fillUsername("student");
+      await fillPassword("student");
+      await signIn();
     });
 
     expect(history.location.pathname).toBe(routes.STUDENT_HOME);
@@ -95,7 +74,7 @@ describe("App navigation", () => {
     expect(history.location.pathname).toBe(routes.LOGIN);
   });
 
-  it("student user logs in and is redirected to instructor dashboard", async () => {
+  it("student user logs in and is redirected to login because they don't have permission to access instructor dashboard", async () => {
     // Access admin page while not logged in
     let history = startAt(routes.INSTRUCTOR_HOME);
     expect(history.location.pathname).toBe(routes.LOGIN);
@@ -107,5 +86,91 @@ describe("App navigation", () => {
     });
 
     expect(history.location.pathname).toBe(routes.LOGIN);
+  });
+});
+
+describe("Password reset", () => {
+  let createStudentUserServerData,
+    registerToken: (pk: number, uid: string, token: string) => void,
+    useToken;
+
+  beforeEach(() => {
+    ({ createStudentUserServerData, registerToken, useToken } =
+      setupMockAuth());
+    createStudentUserServerData();
+  });
+
+  it("user resets password", async () => {
+    registerToken(1, "abc", "defghijkl");
+    const pathname = dynamicPathname(routes.PASSWORD_RESET, {
+      uid: "abc",
+      token: "defghijkl",
+    });
+    const history = startAt(pathname);
+    expect(history.location.pathname).toBe(pathname);
+
+    await act(async () => {
+      await fillPassword("newpass");
+      await fillPasswordConfirmation("newpass");
+      await clickSetPassword();
+    });
+
+    expect(history.location.pathname).toBe(routes.LOGIN);
+  });
+
+  it("user tries to reset password with used token", async () => {
+    const pathname = dynamicPathname(routes.PASSWORD_RESET, {
+      uid: "abc",
+      token: "defghijkl",
+    });
+    const history = startAt(pathname);
+    expect(history.location.pathname).toBe(pathname);
+
+    await act(async () => {
+      await fillPassword("newpass");
+      await fillPasswordConfirmation("newpass");
+      await clickSetPassword();
+    });
+
+    expect(history.location.pathname).toBe(pathname);
+    expect(
+      searchForMessage(
+        /Invalid password reset link|Link de redefinição de senha inválido/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("user tries to reset password with same token twice", async () => {
+    registerToken(1, "abc", "defghijkl");
+    const pathname = dynamicPathname(routes.PASSWORD_RESET, {
+      uid: "abc",
+      token: "defghijkl",
+    });
+    const history = startAt(pathname);
+    expect(history.location.pathname).toBe(pathname);
+
+    await act(async () => {
+      await fillPassword("newpass");
+      await fillPasswordConfirmation("newpass");
+      await clickSetPassword();
+    });
+
+    expect(history.location.pathname).toBe(routes.LOGIN);
+
+    // Try to use same link again
+    history.push(pathname);
+
+    await act(async () => {
+      await fillPassword("newerpass");
+      await fillPasswordConfirmation("newerpass");
+      await clickSetPassword();
+    });
+
+    expect(history.location.pathname).toBe(pathname);
+    expect(
+      searchForMessage(
+        /Invalid password reset link|Link de redefinição de senha inválido/i,
+      ),
+    ).toBeInTheDocument();
   });
 });

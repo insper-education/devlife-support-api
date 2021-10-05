@@ -7,7 +7,7 @@ interface ISeparatorProps {
 
 const Separator = ({ children }: ISeparatorProps) => {
   return (
-    <div className={styles.separator}>
+    <div className={`uppercase ${styles.separator}`}>
       <span>{children || ""}</span>
     </div>
   );

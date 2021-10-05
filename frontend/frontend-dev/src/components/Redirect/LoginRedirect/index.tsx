@@ -1,13 +1,17 @@
 import React from "react";
-import { Redirect, useLocation } from "react-router";
+import { matchPath, Redirect, useLocation } from "react-router";
 import { useUser } from "../../../contexts/user-context";
-import { routes } from "../../../routes";
+import { routes, routesData } from "../../../routes";
 
 const LoginRedirect = () => {
   const { user } = useUser();
   const location = useLocation();
 
-  if (!user && location.pathname !== routes.LOGIN)
+  if (
+    !user &&
+    !matchPath(location.pathname, routesData[routes.LOGIN].props) &&
+    !matchPath(location.pathname, routesData[routes.PASSWORD_RESET].props)
+  )
     return (
       <Redirect
         to={{ pathname: routes.LOGIN, search: `?next=${location.pathname}` }}

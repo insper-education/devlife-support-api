@@ -25,7 +25,14 @@ export const fillUsername = async (username: string) => {
 };
 
 export const fillPassword = async (password: string) => {
-  const passwordInput = await screen.getByLabelText(/pass.*|senha/i);
+  const passwordInput = await screen.getByLabelText(/pass.*|^senha/i);
+  userEvent.type(passwordInput, password);
+};
+
+export const fillPasswordConfirmation = async (password: string) => {
+  const passwordInput = await screen.getByLabelText(
+    /repeat pass.*|confirmar senha/i,
+  );
   userEvent.type(passwordInput, password);
 };
 
@@ -35,4 +42,16 @@ export const signIn = async () => {
   });
 
   userEvent.click(submitButton);
+};
+
+export const clickSetPassword = async () => {
+  const submitButton = await screen.getByRole("button", {
+    name: /set pass.*|definir senha/i,
+  });
+
+  userEvent.click(submitButton);
+};
+
+export const searchForMessage = (message: string | RegExp) => {
+  return screen.queryByText(message);
 };

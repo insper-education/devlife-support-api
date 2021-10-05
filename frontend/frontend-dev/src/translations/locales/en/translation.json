@@ -4,6 +4,7 @@
   "Type username": "Enter the username",
   "username is a required field": "Required",
   "password is a required field": "Required",
+  "Invalid password reset link": "Invalid password reset link. Request a new link to reset your password.",
   "Invalid credentials": "Wrong username or password",
   "not-admin": "You don't have permission to access this page. Please log in with an authorized user.",
   "submissions sent before": "{{users}} students submitted {{total}} answers before {{lastUpdate}}"

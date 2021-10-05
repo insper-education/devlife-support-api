@@ -226,7 +226,7 @@ class StudentAndInstructorTests(TestCase):
 
 
 class PasswordResetEmailTestCase(APITestCase):
-    def create_user(self, with_email=True):
+    def create_student(self, with_email=True):
         kwargs = {
             "first_name": "Leeroy",
             "last_name": "Jenkins",
@@ -235,16 +235,20 @@ class PasswordResetEmailTestCase(APITestCase):
         }
         if with_email:
             kwargs["email"] = "leeroyj@al.insper.edu.br"
-        return User.objects.create_user(**kwargs)
+        return Student.objects.create_user(**kwargs)
 
-    def assert_reset_email(self, email, expected_subject, user):
+    def assert_reset_email(self, email, expected_subject, user, first_time):
         self.assertEqual(email.subject, expected_subject)
         self.assertEqual(email.from_email, settings.DEFAULT_FROM_EMAIL)
         self.assertListEqual(email.to, [user.email])
         self.assertIn("/password-reset/", email.body)
+        if first_time:
+            self.assertIn("?first=true", email.body)
+        else:
+            self.assertNotIn("?first=true", email.body)
 
     def test_send_password_reset_email_api_endpoint(self):
-        user = self.create_user()
+        user = self.create_student()
         mail.outbox = []  # Creating a user triggers a password reset email
 
         response = self.client.post(
@@ -260,14 +264,14 @@ class PasswordResetEmailTestCase(APITestCase):
         self.assertEqual(len(mail.outbox), 2)
 
         expected_emails = [
-            (_("[DevLife] Set password")),
-            (_("[DevLife] Password reset")),
+            (_("[DevLife] Set password"), True),
+            (_("[DevLife] Password reset"), False),
         ]
-        for (expected_subject), email in zip(expected_emails, mail.outbox):
-            self.assert_reset_email(email, expected_subject, user)
+        for (expected_subject, first_time), email in zip(expected_emails, mail.outbox):
+            self.assert_reset_email(email, expected_subject, user, first_time)
 
     def test_send_password_reset_email_when_user_is_created(self):
-        user = self.create_user()
+        user = self.create_student()
 
         user.name = "Leeeeeroy"
         user.save()
@@ -277,14 +281,14 @@ class PasswordResetEmailTestCase(APITestCase):
 
         self.assertEqual(len(mail.outbox), 2)
         for email in mail.outbox:
-            self.assert_reset_email(email, _("[DevLife] Set password"), user)
+            self.assert_reset_email(email, _("[DevLife] Set password"), user, True)
 
     def test_send_password_reset_email_when_user_receives_email(self):
-        user = self.create_user(with_email=False)
+        user = self.create_student(with_email=False)
 
         user.email = "leeroyj@al.insper.edu.br"
         user.save()
 
         self.assertEqual(len(mail.outbox), 1)
         for email in mail.outbox:
-            self.assert_reset_email(email, _("[DevLife] Set password"), user)
+            self.assert_reset_email(email, _("[DevLife] Set password"), user, True)

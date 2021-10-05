@@ -3,13 +3,15 @@ import { IUser } from "../models/User";
 import ExerciseAnswers from "../screens/ExerciseAnswers";
 import InstructorHome from "../screens/InstructorHome";
 import Login from "../screens/Login";
+import PasswordChange from "../screens/PasswordChange";
 import StudentHome from "../screens/StudentHome";
 
 export enum routes {
   STUDENT_HOME = "/",
   INSTRUCTOR_HOME = "/instructor",
   EXERCISE_ANSWERS = "/instructor/answers/:offering/:slug/",
-  LOGIN = "/login"
+  LOGIN = "/login",
+  PASSWORD_RESET = "/password-reset/:uid/:token/",
 }
 
 interface IRouteData {
@@ -24,8 +26,8 @@ routesData[routes.STUDENT_HOME] = {
   props: {
     path: routes.STUDENT_HOME,
     exact: true,
-    component: StudentHome
-  }
+    component: StudentHome,
+  },
 };
 routesData[routes.INSTRUCTOR_HOME] = {
   title: "Instructor Dashboard",
@@ -33,8 +35,8 @@ routesData[routes.INSTRUCTOR_HOME] = {
   props: {
     path: routes.INSTRUCTOR_HOME,
     exact: true,
-    component: InstructorHome
-  }
+    component: InstructorHome,
+  },
 };
 routesData[routes.EXERCISE_ANSWERS] = {
   title: "Exercise Answers",
@@ -42,16 +44,24 @@ routesData[routes.EXERCISE_ANSWERS] = {
   props: {
     path: routes.EXERCISE_ANSWERS,
     exact: true,
-    component: ExerciseAnswers
-  }
+    component: ExerciseAnswers,
+  },
 };
 routesData[routes.LOGIN] = {
   title: "Login",
   props: {
     path: routes.LOGIN,
     exact: true,
-    component: Login
-  }
+    component: Login,
+  },
+};
+routesData[routes.PASSWORD_RESET] = {
+  title: "Password reset",
+  props: {
+    path: routes.PASSWORD_RESET,
+    exact: true,
+    component: PasswordChange,
+  },
 };
 
 export const navRoutes: string[] = [routes.INSTRUCTOR_HOME];
