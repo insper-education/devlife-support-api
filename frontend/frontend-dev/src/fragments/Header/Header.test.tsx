@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import "../../test-utils/mock-i18next";
 import { mockUseUserReturn } from "../../test-utils/mock-user-context";
-import { User } from "../../models/User";
+import { IUser } from "../../models/User";
 import Header from ".";
 
 import "../../routes";
@@ -15,7 +15,7 @@ jest.mock("../../routes", () => ({
     },
     "/admin-only": {
       title: "ADMIN PAGE",
-      permissionTest: (user: User | null): boolean => !!user?.isStaff,
+      permissionTest: (user: IUser | null): boolean => !!user?.isStaff,
     },
   },
 }));
@@ -26,7 +26,7 @@ const setupMockUser = (isStaff: boolean) => {
     firstName: "SpongeBob",
     lastName: "SquarePants",
     isStaff,
-  } as User);
+  } as IUser);
 };
 
 const signStudentIn = () => {
