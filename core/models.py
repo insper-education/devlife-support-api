@@ -4,7 +4,8 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    pass
+    password_email_sent = models.BooleanField(default=False)
+
 
 
 class StudentManager(UserManager):
@@ -90,7 +91,7 @@ class Answer(models.Model):
     long_answer = models.JSONField()
 
     def __str__(self) -> str:
-        return f'{self.exercise} -> {self.user.username} ({self.submission_date})'
+        return f"{self.exercise} -> {self.user.username} ({self.submission_date})"
 
 
 class UserAnswerSummary(models.Model):
@@ -102,5 +103,7 @@ class UserAnswerSummary(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'exercise'], name='unique_user_exercise_summary'),
+            models.UniqueConstraint(
+                fields=["user", "exercise"], name="unique_user_exercise_summary"
+            ),
         ]

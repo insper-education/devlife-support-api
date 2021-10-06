@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^5.9.0",
+    "@headlessui/react": "^1.4.1",
+    "@heroicons/react": "^1.0.4",
     "@hookform/resolvers": "^2.8.0",
     "@tailwindcss/forms": "^0.3.3",
     "@testing-library/jest-dom": "^5.11.4",
@@ -30,7 +32,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "PUBLIC_URL='/static' craco build",
+    "build": "PUBLIC_URL='/static' craco build && mv build/static/static/img build/static/img",
     "test": "craco test --silent=false",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
@@ -70,6 +72,10 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7"
   },
   "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
     "overrides": [
       {
         "files": [

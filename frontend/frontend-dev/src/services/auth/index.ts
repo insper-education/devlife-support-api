@@ -1,10 +1,10 @@
 import axios from "axios";
 import { IUser } from "../../models/User";
-import { LOGIN_PATH, USER_DATA_PATH } from "../routes";
+import { LOGIN_PATH, PASSWORD_RESET_PATH, USER_DATA_PATH } from "../routes";
 
 export const login = async (
   username: string,
-  password: string
+  password: string,
 ): Promise<IUser | null> => {
   return axios
     .post(LOGIN_PATH, { username, password })
@@ -13,8 +13,8 @@ export const login = async (
       return axios
         .get(USER_DATA_PATH, {
           headers: {
-            Authorization: `Token ${token}`
-          }
+            Authorization: `Token ${token}`,
+          },
         })
         .then((res) => res.data)
         .then((userData) => {
@@ -25,12 +25,29 @@ export const login = async (
             firstName: userData.first_name,
             lastName: userData.last_name,
             isStaff: userData.is_staff,
-            token
+            token,
           };
         })
         .catch(() => null);
     })
     .catch(() => null);
+};
+
+export const resetPassword = async (
+  uid: string,
+  token: string,
+  password1: string,
+  password2: string,
+): Promise<boolean> => {
+  return axios
+    .post(PASSWORD_RESET_PATH, {
+      uid,
+      token,
+      new_password1: password1,
+      new_password2: password2,
+    })
+    .then(() => true)
+    .catch(() => false);
 };
 
 const USER_KEY = "devlife-user-data";

@@ -1,10 +1,17 @@
 {
   "Username": "Usuário",
   "Password": "Senha",
-  "Type username": "Digite o nome de usuário",
+  "Repeat password": "Confirmar senha",
+  "Set password": "Definir senha",
+  "Reset password": "Redefinir senha",
+  "Passwords must match": "As senhas devem ser iguais",
+  "Invalid password reset link": "Link de redefinição de senha inválido. Solicite um novo link para redefinir sua senha.",
+  "Type username": "Nome de usuário",
   "Student Dashboard": "Dashboard do Aluno",
   "Instructor Dashboard": "Dashboard do Professor",
   "Sign in": "Entrar",
+  "Sign up": "Criar conta",
+  "Ask the instructor to sign you up": "Se não tiver recebido um e-mail com o link de cadastro, peça para o seu professor enviá-lo novamente.",
   "username is a required field": "Campo obrigatório",
   "password is a required field": "Campo obrigatório",
   "Invalid credentials": "Usuário ou senha inválidos",
@@ -20,5 +27,6 @@
   "Max points": "Pontuação",
   "Attempts": "Tentativas",
   "Tests passing": "Testes passando",
-  "Your solution": "Sua solução"
+  "Your solution": "Sua solução",
+  "or": "ou"
 }
