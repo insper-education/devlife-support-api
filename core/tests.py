@@ -47,8 +47,8 @@ class AnswerSignalTestCase(TestCase):
             user=self.student,
             exercise=exercise,
             points=points,
-            summary="{}",
-            long_answer="{}",
+            test_results="{}",
+            student_input="{}",
         )
 
     def assert_sumary(self, exercise, max_points, count, latest_id):

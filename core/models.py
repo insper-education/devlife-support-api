@@ -87,8 +87,8 @@ class Answer(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     points = models.FloatField()
     submission_date = models.DateTimeField(default=timezone.now)
-    summary = models.JSONField()
-    long_answer = models.JSONField()
+    test_results = models.JSONField()
+    student_input = models.JSONField()
 
     def __str__(self) -> str:
         return f"{self.exercise} -> {self.user.username} ({self.submission_date})"
