@@ -6,6 +6,7 @@ import { useUser } from "../../../contexts/user-context";
 import { IExercise } from "../../../models/Exercise";
 import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import { useAnswer } from "../../../services/exercises";
+import { IAnswer } from "../../../models/Answer";
 
 interface ICodeExerciseResultProps {
   offering: number;
@@ -59,15 +60,15 @@ const CodeExerciseResult = ({
               <span className="mr-8">
                 {t("Tests passing")}:{" "}
                 <strong className="font-bold">
-                  {answer && answer.summary ? answer.summary?.passed : "0"}
+                  {answer && answer.test_results ? answer.test_results?.passed : "0"}
                 </strong>
               </span>
             </div>
-            {answer?.long_answer?.code && (
+            {answer?.student_input?.code && (
               <div className="mt-4">
                 <strong className="font-bold">{t("Your solution")}:</strong>
                 <pre className="mt-2 bg-black text-white py-4 px-4">
-                  {answer.long_answer.code}
+                  {answer.student_input.code}
                 </pre>
               </div>
             )}

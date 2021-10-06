@@ -3,9 +3,9 @@ export interface IAnswer {
   user: number;
   exercise: number;
   points: number;
-  submissionDate: string;
-  summary: any;
-  long_answer: any;
+  submission_date: string;
+  test_results: any;
+  student_input: any;
 }
 
 export interface ICodeAnswerSummary {
