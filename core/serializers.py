@@ -24,8 +24,8 @@ class AnswerSerializer(serializers.ModelSerializer):
             "exercise",
             "points",
             "submission_date",
-            "summary",
-            "long_answer",
+            "test_results",
+            "student_input",
         ]
 
 

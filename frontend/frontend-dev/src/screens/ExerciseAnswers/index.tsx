@@ -11,6 +11,7 @@ import { routes } from "../../routes";
 import { api } from "../../services/api";
 import { LIST_EXERCISE_ANSWERS } from "../../services/routes";
 import Button from "../../components/Button";
+import { IAnswer } from "../../models/Answer";
 
 interface IExerciseAnswersParams {
   offering: string;
@@ -21,15 +22,6 @@ interface ISummary {
   choice: number;
   num_choices: number;
 }
-interface IAnswer {
-  pk: number;
-  user: number;
-  exercise: number;
-  points: number;
-  submission_date: string;
-  summary?: ISummary;
-  long_answer?: string;
-}
 
 function ExerciseAnswers() {
   const { t } = useTranslation();
@@ -38,18 +30,18 @@ function ExerciseAnswers() {
 
   const textAnswers = useMemo(() => {
     return answers
-      .filter((answer) => typeof answer.long_answer === "string")
+      .filter((answer) => typeof answer.student_input === "string")
       .map((answer) => ({
         timestamp: answer.submission_date,
-        summary: answer.summary,
-        long: answer.long_answer,
+        test_results: answer.test_results,
+        student_input: answer.student_input,
       }));
   }, [answers]);
 
   const testsAnswers = useMemo(() => {
     return answers
-      .filter((answer) => !!(typeof answer.summary !== "string"))
-      .map((answer) => answer.summary);
+      .filter((answer) => !!(typeof answer.test_results !== "string"))
+      .map((answer) => answer.test_results);
   }, [answers]);
 
   useEffect(() => {
@@ -125,12 +117,12 @@ function ExerciseAnswers() {
         <Table
           data={textAnswers.map((answer) => ({
             [t("Submission time")]: new Date(answer.timestamp).toLocaleString(),
-            [t("Summary")]: answer.summary,
-            [t("Long answer")]: (
+            [t("Test results")]: answer.test_results,
+            [t("Student input")]: (
               <Button
                 variant="primary"
                 onClick={() => {
-                  console.log(answer.long);
+                  console.log(answer.student_input);
                 }}>
                 click me
               </Button>

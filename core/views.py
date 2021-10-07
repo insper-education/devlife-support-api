@@ -64,8 +64,8 @@ class AnswerViewSet(viewsets.ModelViewSet):
         answer_data = {
             'user': request.user.pk,
             'exercise': exercise.pk,
-            'summary': request.data['summary'],
-            'long_answer': request.data['long_answer'],
+            'test_results': request.data['test_results'],
+            'student_input': request.data['student_input'],
             'points': request.data['points']
         }
 
