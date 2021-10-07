@@ -7,7 +7,6 @@ class User(AbstractUser):
     password_email_sent = models.BooleanField(default=False)
 
 
-
 class StudentManager(UserManager):
     def get_queryset(self):
         return User.objects.filter(is_staff=False)
@@ -39,7 +38,7 @@ class Instructor(User):
 
 
 class Course(models.Model):
-    name = models.TextField(max_length=30)
+    name = models.CharField(max_length=30)
 
     def __str__(self) -> str:
         return self.name
@@ -56,6 +55,9 @@ class Offering(models.Model):
 class Enrollment(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'{self.student} [{self.offering}]'
 
 
 class Teaches(models.Model):
