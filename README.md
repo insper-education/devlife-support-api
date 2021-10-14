@@ -1,5 +1,8 @@
 # Developer Life Support API
 
+![Django CI](https://github.com/insper-education/devlife-support-api/actions/workflows/django.yml/badge.svg)
+![NodeJS CI](https://github.com/insper-education/devlife-support-api/actions/workflows/node.js.yml/badge.svg)
+
 ## API Documentation
 
 Currently available:
@@ -21,5 +24,5 @@ Currently available:
 
 ## Docker
 
-	docker build -t devlife-support .
-	docker run -v $PWD:/app -p 8000:8000 devlife-support
+    docker build -t devlife-support .
+    docker run -v $PWD:/app -p 8000:8000 devlife-support
