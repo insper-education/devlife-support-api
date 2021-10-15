@@ -1,9 +1,7 @@
 from core.permissions import IsEnrolledInOfferingOrIsStaff
-from pathlib import Path
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core import mail
-from django.http import Http404
 from django.test import TestCase
 from core.models import Course, Enrollment, Instructor, Offering, Student, Teaches, Exercise, Answer, User, UserAnswerSummary
 from unittest.mock import MagicMock
@@ -11,6 +9,9 @@ from rest_framework.test import APIRequestFactory, APITestCase, force_authentica
 from rest_framework.authtoken.models import Token
 
 from .views import ExerciseViewSet ,list_summaries
+
+# Include tests from blackboard_utils
+from .blackboard_utils.tests import *
 
 
 class AnswerSignalTestCase(TestCase):
