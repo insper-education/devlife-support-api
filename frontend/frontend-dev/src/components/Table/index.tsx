@@ -6,10 +6,6 @@ interface ITableProps {
 }
 
 function UnmemoizedTable({ data, header }: ITableProps) {
-  if (!data.length) {
-    return null;
-  }
-
   const headerLabels = header ? Object.values(header) : Object.keys(data[0]);
   const rows = header
     ? data.map((row) => Object.keys(header).map((key) => row[key]))
