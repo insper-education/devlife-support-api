@@ -32,7 +32,7 @@ function UnmemoizedTable({ data, header }: ITableProps) {
               </thead>
 
               <tbody className="bg-white divide-y divide-gray-50">
-                {rows.map((row, rowIndex) => (
+                {(rows || [{}]).map((row, rowIndex) => (
                   <tr
                     key={"textAnswers__" + rowIndex}
                     className={!!(rowIndex % 2) ? "bg-gray-100" : "bg-gray-50"}>
@@ -40,7 +40,7 @@ function UnmemoizedTable({ data, header }: ITableProps) {
                       <td
                         key={`cell__${columnIndex}${rowIndex}`}
                         className="px-6 py-4 whitespace-nowrap">
-                        {cell ?? ""}
+                        {cell ?? "null"}
                       </td>
                     ))}
                   </tr>
@@ -81,7 +81,7 @@ function UnmemoizedTable({ data, header }: ITableProps) {
   * Or
   * 
   * ```typescript
-  * const columns = {
+  * const header = {
   *   h1: "Header 1",
   *   h2: "Header 2",
   *   hx: "Header x"
