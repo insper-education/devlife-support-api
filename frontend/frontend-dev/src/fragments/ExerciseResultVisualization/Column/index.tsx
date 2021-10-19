@@ -23,12 +23,12 @@ const Column = ({
   };
 
   return (
-    <div className="border border-gray-200 py-2 overflow-hidden">
+    <div className="flex flex-col border border-gray-200 py-2 pb-0 overflow-hidden h-full compact-scrollbar box-border">
       <Title variant={5} className="px-4 mt-2">
         {title}
       </Title>
-      <div className="flex overflow-x-auto w-full">
-        <ul className="flex flex-col py-4 mt-4 w-full min-w-max">
+      <div className="flex flex-1 overflow-auto w-full ">
+        <ul className="flex flex-col py-4 w-full min-w-max">
           {options.map((option, idx) => (
             <li
               key={`option-${option}-${idx}`}

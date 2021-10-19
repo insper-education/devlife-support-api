@@ -104,7 +104,7 @@ const ExerciseResultVisualization = ({
   };
 
   return (
-    <div className={`grid grid-rows-2 lg:grid-cols-6 shadow-sm ${className ? className : ""}`}>
+    <div className={`grid grid-flow-row-dense grid-cols-1 lg:grid-cols-6 shadow-sm ${className ? className : ""}`}>
       <Column
         title={t("Topic")}
         options={Object.keys(exerciseGroups)}
@@ -126,7 +126,7 @@ const ExerciseResultVisualization = ({
         completionRates={exerciseCompletionRates}
         selectedRow={selectedExerciseRow}
       />
-      <div className="lg:col-start-4 lg:col-end-7 border border-gray-200 py-2">
+      <div className="lg:col-start-4 lg:col-end-7 border py-2">
         <ResultColumn
           offering={1}
           data={selectedData}

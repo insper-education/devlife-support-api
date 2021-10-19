@@ -7,6 +7,7 @@ import { IExercise } from "../../../models/Exercise";
 import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import { useAnswer } from "../../../services/exercises";
 import { IAnswer } from "../../../models/Answer";
+import { CodeVisualizer } from "../../../components/CodeVisualizer";
 
 interface ICodeExerciseResultProps {
   offering: number;
@@ -34,7 +35,7 @@ const CodeExerciseResult = ({
       <Title variant={5} className="px-4 mt-2">
         {exercise?.slug || ""}
       </Title>
-      <div className="px-4 mt-4">
+      <div className="px-4 mt-4 max-w-full">
         <Button className="uppercase tracking-wide">Ver Exercício</Button>
         <section className="mt-6">
           <Title variant={5}>{t("Results")}</Title>
@@ -60,16 +61,18 @@ const CodeExerciseResult = ({
               <span className="mr-8">
                 {t("Tests passing")}:{" "}
                 <strong className="font-bold">
-                  {answer && answer.test_results ? answer.test_results?.passed : "0"}
+                  {answer && answer.test_results
+                    ? answer.test_results?.passed
+                    : "0"}
                 </strong>
               </span>
             </div>
             {answer?.student_input?.code && (
               <div className="mt-4">
                 <strong className="font-bold">{t("Your solution")}:</strong>
-                <pre className="mt-2 bg-black text-white py-4 px-4">
-                  {answer.student_input.code}
-                </pre>
+                <div className="text-white mt-2 box-border rounded overflow-auto no-scrollbar">
+                  <CodeVisualizer>{answer.student_input.code}</CodeVisualizer>
+                </div>
               </div>
             )}
           </section>
