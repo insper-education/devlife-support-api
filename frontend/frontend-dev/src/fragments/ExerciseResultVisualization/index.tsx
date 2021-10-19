@@ -59,6 +59,7 @@ const ExerciseResultVisualization = ({
     exerciseCompletionRates,
     setExerciseCompletionRates,
   ] = useState<ICompletionRates>({});
+  
   useEffect(() => {
     const exerciseList = contentGroups[contentGroup];
     setExercises(

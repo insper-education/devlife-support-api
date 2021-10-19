@@ -30,17 +30,17 @@ function ExerciseAnswers() {
 
   const textAnswers = useMemo(() => {
     return answers
-      .filter((answer) => typeof answer.student_input === "string")
+      .filter((answer) => Object.keys(answer.test_results).includes("text"))
       .map((answer) => ({
         timestamp: answer.submission_date,
-        test_results: answer.test_results,
+        test_results: answer.test_results.text,
         student_input: answer.student_input,
       }));
   }, [answers]);
 
   const testsAnswers = useMemo(() => {
     return answers
-      .filter((answer) => !!(typeof answer.test_results !== "string"))
+      .filter((answer) => !Object.keys(answer.test_results).includes("text"))
       .map((answer) => answer.test_results);
   }, [answers]);
 
@@ -115,18 +115,15 @@ function ExerciseAnswers() {
 
       {!!textAnswers.length && (
         <Table
-          data={textAnswers.map((answer) => ({
-            [t("Submission time")]: new Date(answer.timestamp).toLocaleString(),
-            [t("Test results")]: answer.test_results,
-            [t("Student input")]: (
-              <Button
-                variant="primary"
-                onClick={() => {
-                  console.log(answer.student_input);
-                }}>
-                click me
-              </Button>
-            ),
+          header={{
+            timestamp: t("Submission time"),
+            test_results: t("Test results"),
+            student_input: t("Student input"),
+          }}
+          data={textAnswers.map((item) => ({
+            ...item,
+            timestamp: new Date(item.timestamp).toLocaleString(),
+            student_input: JSON.stringify(item.student_input),
           }))}
         />
       )}
