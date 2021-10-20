@@ -23,28 +23,30 @@ const Column = ({
   };
 
   return (
-    <div className="border border-gray-200 py-2 overflow-hidden">
+    <div className="flex flex-col border border-gray-200 py-2 pb-0 overflow-hidden h-full compact-scrollbar box-border">
       <Title variant={5} className="px-4 mt-2">
         {title}
       </Title>
-      <ul className="mt-4">
-        {options.map((option, idx) => (
-          <li
-            key={`option-${option}-${idx}`}
-            onClick={() => handleClick(idx)}
-            className={`flex items-center cursor-pointer px-4 py-1 ${
-              idx === selectedRow ? "bg-primary-50" : ""
-            }`}>
-            <div className="min-w-min mr-2">
-              <ProgressCheck
-                className="w-6 h-6"
-                progress={completionRates[option]}
-              />
-            </div>
-            {option}
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-1 overflow-auto w-full ">
+        <ul className="flex flex-col py-4 w-full min-w-max">
+          {options.map((option, idx) => (
+            <li
+              key={`option-${option}-${idx}`}
+              onClick={() => handleClick(idx)}
+              className={`flex items-center cursor-pointer px-4 py-1 w-auto ${
+                idx === selectedRow ? "bg-primary-50" : ""
+              }`}>
+              <div className="min-w-min mr-2">
+                <ProgressCheck
+                  className="w-6 h-6"
+                  progress={completionRates[option]}
+                />
+              </div>
+              <span className="whitespace-nowrap">{option}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

@@ -21,7 +21,7 @@ const StudentHome = () => {
   const { t } = useTranslation();
   const { user } = useUser();
   const [exerciseGroups, setExerciseGroups] = useState<ITopicContentExercises>(
-    {},
+    {}
   );
 
   const token = user?.token || "";
@@ -35,7 +35,7 @@ const StudentHome = () => {
   const { summaryList, loading: loadingSummaryList } = useSummaryList(
     offering,
     token,
-    user?.pk,
+    user?.pk
   );
   const [summaryMap, setSummaryMap] = useState<IUserAnswerSummaryMap>({});
   useEffect(() => {
@@ -48,8 +48,8 @@ const StudentHome = () => {
   return (
     <>
       <Header />
-      <Container>
-        <Title>{t("Dashboard")}</Title>
+      <Container className="max-w-full">
+        <Title variant={2}>{t("Dashboard")}</Title>
         <SubTitle>{`${user.firstName} ${user?.lastName}`}</SubTitle>
 
         <section className="my-8">
