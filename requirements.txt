@@ -10,3 +10,5 @@ django-cors-headers
 python-dotenv
 requests
 pandas
+gunicorn==20.1.0
+psycopg2-binary==2.9.1
