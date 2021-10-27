@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  IExercise,
-  IExerciseGroups,
-  ITopicContentExercises,
-} from "../../models/Exercise";
-import { IUserAnswerSummaryMap } from "../../models/UserAnswerSummary";
+import { ExercisesProvider } from "../../contexts/ExercisesContext";
+import { useExerciseContext } from "../../hooks/useExerciseContext";
+import { IExerciseGroups } from "../../models/Exercise";
 import Column from "./Column";
+import { InstructorResultColumn } from "./InstructorResultVisualization";
 import ResultColumn from "./ResultColumn";
 import {
   ICompletionRates,
@@ -16,24 +14,21 @@ import {
 } from "./service";
 
 interface IExerciseResultVisualizationProps {
-  exerciseGroups: ITopicContentExercises;
-  summaryMap: IUserAnswerSummaryMap;
   className?: string;
+  viewAsStaff?: boolean;
 }
 
 const ExerciseResultVisualization = ({
-  exerciseGroups,
-  summaryMap,
   className,
+  viewAsStaff = false,
 }: IExerciseResultVisualizationProps) => {
   const { t } = useTranslation();
   const [topic, setTopic] = useState<string>("");
   const [contentGroup, setContentGroup] = useState<string>("");
+  const { summaryMap, exerciseGroups, setSelectedData } = useExerciseContext();
 
-  const [
-    topicCompletionRates,
-    setTopicCompletionRates,
-  ] = useState<ICompletionRates>({});
+  const [topicCompletionRates, setTopicCompletionRates] =
+    useState<ICompletionRates>({});
   useEffect(() => {
     setTopicCompletionRates(
       extractCompletionRatesFromTopicContents(exerciseGroups, summaryMap),
@@ -41,10 +36,8 @@ const ExerciseResultVisualization = ({
   }, [exerciseGroups, summaryMap]);
 
   const [contentGroups, setContentGroups] = useState<IExerciseGroups>({});
-  const [
-    groupCompletionRates,
-    setGroupCompletionRates,
-  ] = useState<ICompletionRates>({});
+  const [groupCompletionRates, setGroupCompletionRates] =
+    useState<ICompletionRates>({});
   useEffect(() => {
     const groups = topic ? exerciseGroups[topic] : {};
     setContentGroups(groups);
@@ -55,11 +48,9 @@ const ExerciseResultVisualization = ({
   }, [topic, exerciseGroups, summaryMap]);
 
   const [exercises, setExercises] = useState<string[]>([]);
-  const [
-    exerciseCompletionRates,
-    setExerciseCompletionRates,
-  ] = useState<ICompletionRates>({});
-  
+  const [exerciseCompletionRates, setExerciseCompletionRates] =
+    useState<ICompletionRates>({});
+
   useEffect(() => {
     const exerciseList = contentGroups[contentGroup];
     setExercises(
@@ -77,9 +68,7 @@ const ExerciseResultVisualization = ({
   const [selectedGroupRow, setSelectedGroupRow] = useState<number>(-1);
   const [selectedExerciseRow, setSelectedExerciseRow] = useState<number>(-1);
   const [selectedLevel, setSelectedLevel] = useState<number>(0);
-  const [selectedData, setSelectedData] = useState<
-    IExercise | IExerciseGroups | ITopicContentExercises | null
-  >(null);
+
   const handleSelectTopic = (topic: string, idx: number) => {
     setTopic(topic);
     setSelectedData({ [topic]: exerciseGroups[topic] });
@@ -104,43 +93,51 @@ const ExerciseResultVisualization = ({
   };
 
   return (
-    <div className={`grid grid-flow-row-dense grid-cols-1 lg:grid-cols-6 shadow-sm ${className ? className : ""}`}>
-      <Column
-        title={t("Topic")}
-        options={Object.keys(exerciseGroups)}
-        onSelect={handleSelectTopic}
-        completionRates={topicCompletionRates}
-        selectedRow={selectedTopicRow}
-      />
-      <Column
-        title={t("Content")}
-        options={Object.keys(contentGroups)}
-        onSelect={handleSelectGroup}
-        completionRates={groupCompletionRates}
-        selectedRow={selectedGroupRow}
-      />
-      <Column
-        title={t("Exercises")}
-        options={exercises}
-        onSelect={handleSelectExercise}
-        completionRates={exerciseCompletionRates}
-        selectedRow={selectedExerciseRow}
-      />
-      <div className="lg:col-start-4 lg:col-end-7 border py-2">
-        <ResultColumn
-          offering={1}
-          data={selectedData}
-          summaryMap={summaryMap}
-          completionRates={
-            [
-              topicCompletionRates,
-              groupCompletionRates,
-              exerciseCompletionRates,
-            ][selectedLevel]
-          }
+    <>
+      <div
+        className={`grid grid-flow-row-dense grid-cols-1 lg:grid-cols-4 shadow-sm ${
+          className ? className : ""
+        }`}>
+        <Column
+          title={t("Topic")}
+          options={Object.keys(exerciseGroups)}
+          onSelect={handleSelectTopic}
+          completionRates={topicCompletionRates}
+          selectedRow={selectedTopicRow}
+        />
+        <Column
+          title={t("Content")}
+          options={Object.keys(contentGroups)}
+          onSelect={handleSelectGroup}
+          completionRates={groupCompletionRates}
+          selectedRow={selectedGroupRow}
+        />
+        <Column
+          title={t("Exercises")}
+          options={exercises}
+          className=" lg:col-start-3 lg:col-end-5"
+          onSelect={handleSelectExercise}
+          completionRates={exerciseCompletionRates}
+          selectedRow={selectedExerciseRow}
         />
       </div>
-    </div>
+      <div className="py-2">
+        {viewAsStaff ? (
+          <InstructorResultColumn offering={1} />
+        ) : (
+          <ResultColumn
+            offering={1}
+            completionRates={
+              [
+                topicCompletionRates,
+                groupCompletionRates,
+                exerciseCompletionRates,
+              ][selectedLevel]
+            }
+          />
+        )}
+      </div>
+    </>
   );
 };
 

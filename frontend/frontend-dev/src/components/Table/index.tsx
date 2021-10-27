@@ -3,19 +3,20 @@ import { memo, ReactNode } from "react";
 interface ITableProps {
   header?: Record<string, string>;
   data: Record<string, ReactNode>[];
+  className?: string;
 }
 
-function UnmemoizedTable({ data, header }: ITableProps) {
+function UnmemoizedTable({ data, header, className }: ITableProps) {
   const headerLabels = header ? Object.values(header) : Object.keys(data[0]);
   const rows = header
     ? data.map((row) => Object.keys(header).map((key) => row[key]))
     : data.map((item) => Object.values(item));
 
   return (
-    <div className="flex m-2">
+    <div className={`flex ${className ?? ""}`}>
       <div className="overflow-x-auto no-scrollbar max-w-full">
         <div className="align-middle inline-block">
-          <div className="border-b border-gray-200 rounded-lg overflow-hidden border">
+          <div className="border-b border-gray-200 rounded overflow-hidden border">
             <table className="divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

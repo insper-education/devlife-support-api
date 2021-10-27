@@ -38,7 +38,7 @@ const ExerciseDetails = ({ offering, slug }: IExerciseDetailsProps) => {
     setLastRefresh(new Date());
   }, [loading, summaryList]);
 
-  const answersRoute = dynamicPathname(routes.EXERCISE_ANSWERS, {
+  const answersRoute = dynamicPathname('', {
     offering,
     slug,
   });
