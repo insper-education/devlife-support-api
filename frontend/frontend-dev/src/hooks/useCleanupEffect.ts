@@ -14,7 +14,7 @@ export function useCleanupEffect(
     return () => {
       state.isMounted = false;
       if (typeof cleanupFunction === "function") {
-        return cleanupFunction();
+        cleanupFunction();
       }
     };
   }, dependencies);
