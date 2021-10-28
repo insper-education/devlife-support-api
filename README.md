@@ -16,6 +16,8 @@ Currently available:
   - `/auth/password/change/`
 - `/api/users/`
   - `/api/users/{ID}/`
+- `/api/offerings/{OFF_ID}/exercises/{EX_ID}/answers/{ANS_ID}/previous/` (previous answer for this user and exercise)
+- `/api/offerings/{OFF_ID}/exercises/{EX_ID}/answers/{ANS_ID}/next/` (next answer for this user and exercise)
 
 ## References
 

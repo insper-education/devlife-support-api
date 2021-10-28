@@ -19,13 +19,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ExerciseSerializer
-    
+
     def get_permissions(self):
         permissions = [IsAdminUser]
         if self.action == 'list':
-            permissions = [IsEnrolledInOfferingOrIsStaff] 
+            permissions = [IsEnrolledInOfferingOrIsStaff]
 
-        return [permission() for permission in permissions] 
+        return [permission() for permission in permissions]
 
     def create(self, request, off_pk=None):
         offering = get_object_or_404(Offering, pk=off_pk)
@@ -75,7 +75,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
-      
+
 
 def user_filter(request):
     user_pk = request.user.pk
@@ -87,6 +87,38 @@ def user_filter(request):
         # Can only see own summaries if not admin
         filters['user__pk'] = user_pk
     return filters
+
+
+@api_view(['GET'])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
+def get_previous_answer(request, off_pk, ex_slug, ans_pk):
+    get_object_or_404(Offering, pk=off_pk)
+
+    filters = user_filter(request)
+    try:
+        answer = Answer.objects.filter(
+            exercise__pk=ex_slug,
+            pk__lt=ans_pk,
+            **filters).latest('pk')
+    except Answer.DoesNotExist:
+        raise Http404()
+    return Response(AnswerSerializer(answer).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
+def get_next_answer(request, off_pk, ex_slug, ans_pk):
+    get_object_or_404(Offering, pk=off_pk)
+
+    filters = user_filter(request)
+    try:
+        answer = Answer.objects.filter(
+            exercise__pk=ex_slug,
+            pk__gt=ans_pk,
+            **filters).earliest('pk')
+    except Answer.DoesNotExist:
+        raise Http404()
+    return Response(AnswerSerializer(answer).data)
 
 
 @api_view(['GET'])

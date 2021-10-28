@@ -9,6 +9,8 @@ answers_router = routers.DefaultRouter()
 answers_router.register(r'answers', views.AnswerViewSet, basename='answers')
 
 urlpatterns = [
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/<int:ans_pk>/previous/', views.get_previous_answer),
+    path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/answers/<int:ans_pk>/next/', views.get_next_answer),
     path(r'offerings/<int:off_pk>/exercises/<slug:ex_slug>/', include(answers_router.urls)),
     path(r'offerings/<int:off_pk>/exercises/', views.ExerciseViewSet.as_view({'post': 'create',
                                                                                 'get': 'list'})),
