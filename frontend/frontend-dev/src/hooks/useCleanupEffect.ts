@@ -11,9 +11,11 @@ export function useCleanupEffect(
   useEffect(() => {
     const state: IComponentState = { isMounted: true };
     const cleanupFunction = action(state); // by reference
-    if (cleanupFunction !== undefined && cleanupFunction !== null) {
+    return () => {
       state.isMounted = false;
-      return cleanupFunction();
-    }
+      if (typeof cleanupFunction === "function") {
+        return cleanupFunction();
+      }
+    };
   }, dependencies);
 }
