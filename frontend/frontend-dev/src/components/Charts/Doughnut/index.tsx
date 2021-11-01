@@ -36,7 +36,7 @@ function UnmemoizedDoughnutChart({ options, numSelectedOptions }: IProps) {
   };
 
   return (
-    <div className="sm:w-2/3 md:w-1/3 lg:w-1/4">
+    <div className="w-64">
       <DoughnutChartJS data={data} options={{ maintainAspectRatio: true }} />
     </div>
   );

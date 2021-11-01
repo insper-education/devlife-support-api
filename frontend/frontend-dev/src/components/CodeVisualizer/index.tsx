@@ -5,13 +5,15 @@ import colorTheme from "./colorTheme";
 interface ICodeVisualizerProps {
   children: string;
   language?: "python" | "css" | "javascript";
+  className?: string;
 }
 export function CodeVisualizer({
   children,
   language = "python",
+  className,
 }: ICodeVisualizerProps) {
   return (
-    <div className="compact-scrollbar">
+    <div className={`compact-scrollbar ${className ?? ""}`}>
       <SyntaxHighlighter
         language={language}
         style={colorTheme}

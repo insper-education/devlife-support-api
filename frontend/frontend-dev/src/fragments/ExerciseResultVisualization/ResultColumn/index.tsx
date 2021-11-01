@@ -1,4 +1,5 @@
 import React from "react";
+import { useExerciseContext } from "../../../hooks/useExerciseContext";
 import {
   IExercise,
   IExerciseGroups,
@@ -11,9 +12,7 @@ import { ICompletionRates } from "../service";
 import TopicResult from "../TopicResult";
 
 interface IResultColumnProps {
-  data: IExercise | IExerciseGroups | ITopicContentExercises | null;
   offering: number;
-  summaryMap: IUserAnswerSummaryMap;
   completionRates: ICompletionRates;
 }
 
@@ -49,13 +48,11 @@ const getComponent = (
   return null;
 };
 
-const ResultColumn = ({
-  data,
-  offering,
-  summaryMap,
-  completionRates,
-}: IResultColumnProps) => {
-  return <>{getComponent(data, offering, summaryMap, completionRates)}</>;
+const ResultColumn = ({ offering, completionRates }: IResultColumnProps) => {
+  const { summaryMap, selectedData } = useExerciseContext();
+  return (
+    <>{getComponent(selectedData, offering, summaryMap, completionRates)}</>
+  );
 };
 
 export default ResultColumn;

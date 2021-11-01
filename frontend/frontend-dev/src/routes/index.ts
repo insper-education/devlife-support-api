@@ -1,6 +1,5 @@
 import { RouteProps } from "react-router";
 import { IUser } from "../models/User";
-import ExerciseAnswers from "../screens/ExerciseAnswers";
 import InstructorHome from "../screens/InstructorHome";
 import Login from "../screens/Login";
 import PasswordChange from "../screens/PasswordChange";
@@ -9,7 +8,6 @@ import StudentHome from "../screens/StudentHome";
 export enum routes {
   STUDENT_HOME = "/",
   INSTRUCTOR_HOME = "/instructor",
-  EXERCISE_ANSWERS = "/instructor/answers/:offering/:slug/",
   LOGIN = "/login",
   PASSWORD_RESET = "/password-reset/:uid/:token/",
 }
@@ -36,15 +34,6 @@ routesData[routes.INSTRUCTOR_HOME] = {
     path: routes.INSTRUCTOR_HOME,
     exact: true,
     component: InstructorHome,
-  },
-};
-routesData[routes.EXERCISE_ANSWERS] = {
-  title: "Exercise Answers",
-  permissionTest: (user: IUser | null): boolean => !!user?.isStaff,
-  props: {
-    path: routes.EXERCISE_ANSWERS,
-    exact: true,
-    component: ExerciseAnswers,
   },
 };
 routesData[routes.LOGIN] = {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import ProgressCheck from "../../../components/ProgressCheck";
 import Title from "../../../components/Title";
 import { ICompletionRates } from "../service";
@@ -6,15 +6,17 @@ import { ICompletionRates } from "../service";
 interface IColumnProps {
   title: string;
   options: string[];
+  className?: string;
   completionRates: ICompletionRates;
   selectedRow: number;
   onSelect?: (option: string, index: number) => void;
 }
 
-const Column = ({
+const UnmemoizedColumn = ({
   options,
   onSelect,
   title,
+  className,
   completionRates,
   selectedRow,
 }: IColumnProps) => {
@@ -23,7 +25,10 @@ const Column = ({
   };
 
   return (
-    <div className="flex flex-col border border-gray-200 py-2 pb-0 overflow-hidden h-full compact-scrollbar box-border">
+    <div
+      className={`flex flex-col border border-gray-200 py-2 pb-0 overflow-hidden h-full compact-scrollbar box-border ${
+        className ?? ""
+      }`}>
       <Title variant={5} className="px-4 mt-2">
         {title}
       </Title>
@@ -51,4 +56,4 @@ const Column = ({
   );
 };
 
-export default Column;
+export default memo(UnmemoizedColumn);
