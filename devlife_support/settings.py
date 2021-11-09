@@ -17,15 +17,29 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+development = bool(int(os.getenv("DEV", "1")))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
+# SSL THINGS
+if not development:
+    ALLOWED_HOSTS = ['18.230.96.230', 'testserver', 'devlife.insper-comp.com.br']
+    
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+
+
 SECRET_KEY = "&p7w)4h-_7g-!&dvkvz04(w^7j!&spvof9mvr1fr)2y6ls1)fh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = development
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
@@ -86,7 +100,6 @@ WSGI_APPLICATION = "devlife_support.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-development = bool(int(os.getenv("DEV", "1")))
 if development:
     DATABASES = {
         "default": {
