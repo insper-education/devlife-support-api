@@ -14,11 +14,13 @@ services:
   nginx:
     build: nginx
     ports:
-      - 1337:80
+      - 80:80
+      - 443:443
     depends_on: 
       - web
     volumes:
       - static_volume:/app/.static
+      - /etc/letsencrypt:/etc/letsencrypt
 
   db:
     image: postgres:13.0-alpine
