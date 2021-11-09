@@ -4,6 +4,7 @@ import { Table } from "../../../components/Table";
 import Button from "../../../components/Button";
 import { IAnswer } from "../../../models/Answer";
 import { CodeVisualizer } from "../../../components/CodeVisualizer";
+import { CodeDiff } from "../../../components/CodeDiff";
 
 interface ICode {
   pk: number;
@@ -17,6 +18,7 @@ interface ICodeResultProps {
 export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
   const { t } = useTranslation();
   const [code, setCode] = useState<ICode | undefined>();
+  const [comparing, setComparing] = useState<ICode[]>([]);
 
   function toggleCode(pk: number, text: string) {
     setCode((currentValue) =>
@@ -24,15 +26,34 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
     );
   }
 
+  function selectToCompare(pk: number, text: string) {
+    const comparingPks = comparing.map((codePiece) => codePiece.pk);
+    if (comparingPks.includes(pk)) {
+      return setComparing((prev) =>
+        prev.filter((codePiece) => codePiece.pk !== pk),
+      );
+    }
+    setComparing((prev) => {
+      if (prev.length == 2) {
+        const oldValue = prev[1];
+        return [oldValue, { pk, text }];
+      }
+      return [...prev, { pk, text }];
+    });
+  }
+
+  console.log(codeAnswers);
+
   return (
     <>
       <p>
-        <b>{t("Test answers")}:</b> {codeAnswers.length}
+        <b>{t("Code answers")}:</b> {codeAnswers.length}
       </p>
       <div className="flex flex-col w-full lg:flex-row py-4">
         {!!codeAnswers.length && (
           <Table
             header={{
+              compare: "",
               timestamp: t("Submission time"),
               user: t("User"),
               test_results: t("Tests passing"),
@@ -40,6 +61,11 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
             }}
             data={codeAnswers.map((item) => {
               const itemIsSelected = code?.pk === item.pk;
+              const codeText = item.student_input.code;
+              const codePk = item.pk;
+              const itemIsComparing = comparing
+                .map((item) => item.pk)
+                .includes(codePk);
               return {
                 ...item,
                 test_results: item.test_results.passed,
@@ -48,11 +74,32 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
                   <Button
                     variant={itemIsSelected ? "secondary" : "primary"}
                     onClick={() => {
-                      toggleCode(item.pk, item.student_input.code);
+                      toggleCode(codePk, codeText);
                     }}>
                     {itemIsSelected ? t("Hide code") : t("View code")}
                   </Button>
                 ),
+                compare: (
+                  <label htmlFor="selectToCompare" className="cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="selectedToCompare"
+                      value={codePk}
+                      // disabled={!itemIsComparing && comparing.length > 1}
+                      checked={itemIsComparing}
+                      onChange={() => {
+                        selectToCompare(codePk, codeText);
+                      }}
+                    />
+                  </label>
+                ),
+                // compare: (
+                //   <Button
+                //     onClick={() => selectToCompare(codePk, codeText)}
+                //     disabled={comparing.length > 1 && !itemIsComparing}>
+                //     {itemIsComparing ? "Ocultar" : "Comparar"}
+                //   </Button>
+                // ),
               };
             })}
           />
@@ -63,6 +110,14 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
           </CodeVisualizer>
         )}
       </div>
+      {comparing.length == 2 && (
+        <CodeDiff
+          // oldValue={""}
+          // newValue={""}
+          oldValue={comparing[0].text}
+          newValue={comparing[1].text}
+        />
+      )}
     </>
   );
 }

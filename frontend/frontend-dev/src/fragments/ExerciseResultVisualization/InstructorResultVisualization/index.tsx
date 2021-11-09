@@ -64,6 +64,7 @@ function UnmemoizedInstructorResultColumn({
         <Title variant={5} className="mb-2">
           {t("Results")}
         </Title>
+
         {isQuiz && <MultipleChoiceAnswers testsAnswers={answers} />}
         {isCode && <CodeExerciseResult codeAnswers={answers} />}
         {isText && <TextAnswersResults textAnswers={answers} />}
