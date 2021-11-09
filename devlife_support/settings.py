@@ -24,11 +24,13 @@ development = bool(int(os.getenv("DEV", "1")))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
+
 
 # SSL THINGS
 if not development:
     ALLOWED_HOSTS = ['18.230.96.230', 'testserver', 'devlife.insper-comp.com.br']
-    
+
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -41,7 +43,6 @@ SECRET_KEY = "&p7w)4h-_7g-!&dvkvz04(w^7j!&spvof9mvr1fr)2y6ls1)fh"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = development
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 
 # Application definition
 
