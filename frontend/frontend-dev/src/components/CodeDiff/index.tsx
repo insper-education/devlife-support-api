@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import colorTheme from "./colorTheme";
 import { diffLines, Change } from "diff";
@@ -237,7 +237,7 @@ function Padding() {
       style={{
         padding: "0.75rem",
         background:
-          "repeating-linear-gradient(135deg, #2f323e, #2f323e 8.5px, #00000020 8.5px, #00000020 17px)",
+          "repeating-linear-gradient(135deg, #202533, #202533 8.5px, #20253350 8.5px, #20253350 17px)",
       }}
     />
   );
