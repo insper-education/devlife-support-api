@@ -20,3 +20,17 @@ export function dynamicPathname(route: string, params: Record<string, string|num
   }
   return route;
 }
+
+/**
+ * Generates an array of arbitrary size.
+ * 
+ * Can be called with either one parameter (which will be `amount`) 
+ * or two parameters (`start` and `end` not included)
+ */
+export function range(...args: [amount: number] | [start: number, end: number]) {
+  if (args.length == 1) {
+    return Array.from(Array(args[0]).keys());
+  }
+  const [start, end] = args;
+  return Array.from(Array(end - start).keys()).map(n => start + n);
+}

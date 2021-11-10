@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Table } from "../../../components/Table";
 import Button from "../../../components/Button";
@@ -42,8 +42,6 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
     });
   }
 
-  console.log(codeAnswers);
-
   return (
     <>
       <p>
@@ -80,12 +78,12 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
                   </Button>
                 ),
                 compare: (
-                  <label htmlFor="selectToCompare" className="cursor-pointer">
+                  <label className="cursor-pointer p-3">
                     <input
                       type="checkbox"
                       name="selectedToCompare"
+                      className="m-0 p-0 mx-1 align-middle"
                       value={codePk}
-                      // disabled={!itemIsComparing && comparing.length > 1}
                       checked={itemIsComparing}
                       onChange={() => {
                         selectToCompare(codePk, codeText);
@@ -111,13 +109,135 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
         )}
       </div>
       {comparing.length == 2 && (
-        <CodeDiff
-          // oldValue={""}
-          // newValue={""}
-          oldValue={comparing[0].text}
-          newValue={comparing[1].text}
-        />
+        <CodeDiff left={comparing[0].text} right={comparing[1].text} language="python"/>
       )}
+      <br/>
+      {tests.map(({ before, after }, index) => (
+        <Fragment key={"test_" + index}>
+          <CodeDiff left={before} right={after} title={index} language="python"/>
+          <br />
+        </Fragment>
+      ))}
     </>
   );
 }
+
+const tests = [
+  { before: "", after: "" },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+    after: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+    after: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'N':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'N':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+    after: `
+conf = input('Você tem dúvidas? ')
+while conf != 'N':
+  print('Pratique mais')
+  conf = input('Você tem dúvidas? ')
+  if conf == 'N':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+
+  if conf == 'não':
+    print('Até a próxima')
+`,
+    after: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+    after: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+
+
+  print('Pratique mais')
+
+
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: ``,
+    after: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'não':
+  print('Pratique mais')
+  conf = input('Você ainda tem dúvidas? ')
+  if conf == 'não':
+    print('Até a próxima')
+`,
+  },
+  {
+    before: `
+conf = input('Você ainda tem dúvidas? ')
+while conf != 'N':
+  print('Pratique mais')
+  if conf == 'N':
+    print('Até a próxima')
+`,
+    after: ``,
+  },
+];
