@@ -109,12 +109,22 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
         )}
       </div>
       {comparing.length == 2 && (
-        <CodeDiff left={comparing[0].text} right={comparing[1].text} language="python"/>
+        <CodeDiff
+          left={comparing[0].text}
+          right={comparing[1].text}
+          language="python"
+        />
       )}
-      <br/>
+      <br />
       {tests.map(({ before, after }, index) => (
         <Fragment key={"test_" + index}>
-          <CodeDiff left={before} right={after} title={index} language="python"/>
+          <h1 className="text-lg text-center m-4 font-bold">Exemplo {index}</h1>
+          <CodeDiff
+            left={before}
+            right={after}
+            title={index}
+            language="python"
+          />
           <br />
         </Fragment>
       ))}

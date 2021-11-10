@@ -1,8 +1,9 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import colorTheme from "./colorTheme";
 import { diffLines, Change } from "diff";
 import { range } from "../../helpers";
+import { useToggle } from "../../hooks/useToggle";
 
 interface ICodeDiffProps {
   left: string;
@@ -198,22 +199,34 @@ interface ILineProps {
   line: ILine;
 }
 function Line({ line }: ILineProps) {
+  const [selected, toggleSelect] = useToggle(false);
+
   const backgroundColor = line.added
-    ? "#20ff0050"
+    ? "bg-green-900"
     : line.removed
-    ? "#ff200050"
-    : "transparent";
+    ? "bg-red-900"
+    : "bg-gray-900";
+
+  const selectedBackgroundColor = selected ? "bg-opacity-90" : "";
 
   return (
     <pre
-      style={{ backgroundColor, minWidth: "100" }}
-      className="hover:text-opacity-80 cursor-pointer hover:opacity-80">
+      onClick={toggleSelect}
+      className={`cursor-pointer bg-opacity-50 hover:bg-opacity-90  ${backgroundColor} ${selectedBackgroundColor}`}>
       {line.lineNumber && (
         <span className="px-2 mr-2 text-white bg-transparent-dark select-none">
           {line.lineNumber}
         </span>
       )}
-      {line.value}
+      <SyntaxHighlighter
+        language={"python"}
+        style={colorTheme}
+        PreTag={({ children }: any) => <span>{children}</span>}
+        // wrapLines={true}
+        useInlineStyles={true}
+        lineProps={{ style: { padding: 0 } }}>
+        {line.value}
+      </SyntaxHighlighter>
     </pre>
   );
 }
