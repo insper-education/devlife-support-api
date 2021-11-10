@@ -187,7 +187,7 @@ function RenderCells({ lines }: IRenderCellsProps) {
           line.isPadding ? (
             <Padding key={"padding_" + index} />
           ) : (
-            <Line key={"line_" + index + line.lineNumber} line={line} />
+            <Line key={"line_" + String(index) + line.lineNumber} line={line} />
           ),
         )}
       </code>
@@ -210,24 +210,25 @@ function Line({ line }: ILineProps) {
   const selectedBackgroundColor = selected ? "bg-opacity-90" : "";
 
   return (
-    <pre
+    <div
       onClick={toggleSelect}
-      className={`cursor-pointer bg-opacity-50 hover:bg-opacity-90  ${backgroundColor} ${selectedBackgroundColor}`}>
+      className={`flex flex-row cursor-pointer bg-opacity-40 hover:bg-opacity-90 ${backgroundColor} ${selectedBackgroundColor}`}>
       {line.lineNumber && (
-        <span className="px-2 mr-2 text-white bg-transparent-dark select-none">
+        <span className="text-center w-12 text-gray-400 font-bold bg-transparent-dark select-none">
           {line.lineNumber}
         </span>
       )}
-      <SyntaxHighlighter
-        language={"python"}
-        style={colorTheme}
-        PreTag={({ children }: any) => <span>{children}</span>}
-        // wrapLines={true}
-        useInlineStyles={true}
-        lineProps={{ style: { padding: 0 } }}>
-        {line.value}
-      </SyntaxHighlighter>
-    </pre>
+      <span className="px-2">
+        <SyntaxHighlighter
+          language={"python"}
+          style={colorTheme}
+          PreTag={({ children }: any) => <span>{children}</span>}
+          useInlineStyles={true}
+          lineProps={{ style: { padding: "1rem" } }}>
+          {line.value}
+        </SyntaxHighlighter>
+      </span>
+    </div>
   );
 }
 
@@ -240,73 +241,5 @@ function Padding() {
           "repeating-linear-gradient(135deg, #202533, #202533 8.5px, #20253350 8.5px, #20253350 17px)",
       }}
     />
-  );
-}
-function CodeBlock({ children }: { children: JSX.Element }) {
-  const numberOfLines = children.props.children.length;
-
-  return (
-    <pre
-      className="grid grid-cols-12 p-4 pl-0"
-      style={{ backgroundColor: "#2f323e", color: "#76d9e6" }}>
-      <code className="grid col-start-1 col-end-1">
-        {[0, 1].map((lineNumber) => (
-          <span key={"line_" + lineNumber}>{lineNumber}</span>
-        ))}
-      </code>
-      {children}
-    </pre>
-  );
-}
-
-interface IDiffCellProps {
-  codeBlock: string;
-  getLineColor(lineNumber: number, codeBlock: string): string | undefined;
-}
-
-function DiffCell({ codeBlock, getLineColor }: IDiffCellProps) {
-  return (
-    <SyntaxHighlighter
-      language={"python"}
-      style={colorTheme}
-      useInlineStyles={true}
-      // PreTag={CodeBlock}
-      // codeTagProps={{
-      //   className: "token string",
-      //   onLoad(e) {
-      //     console.log(e.target);
-      //   },
-      //   onClick(e) {
-      //     console.log(e.target);
-      //   },
-      // }}
-      // showLineNumbers={true}
-      showLineNumbers={false}
-      showInlineLineNumber={true}
-      wrapLines={true}
-      lineProps={(lineNumber) => {
-        const backgroundColor = getLineColor(lineNumber, codeBlock);
-        return {
-          style: {
-            backgroundColor,
-            borderRadius: 2,
-          },
-          onClick: () => {
-            console.log(lineNumber);
-          },
-        };
-      }}
-      lineNumberStyle={(lineNumber: number) => {
-        const color = getLineColor(lineNumber, codeBlock);
-        return {
-          fontWeight: "bold",
-          color: "#c0c0c050",
-          backgroundColor: color,
-          padding: "0 0.25rem",
-          userSelect: "none",
-        };
-      }}>
-      {codeBlock.trim()}
-    </SyntaxHighlighter>
   );
 }

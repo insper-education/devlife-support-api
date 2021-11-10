@@ -138,18 +138,18 @@ const tests = [
     before: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
     after: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
   },
   {
@@ -174,59 +174,57 @@ while conf != 'N':
     before: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
     after: `
 conf = input('Você tem dúvidas? ')
 while conf != 'N':
-  print('Pratique mais')
-  conf = input('Você tem dúvidas? ')
-  if conf == 'N':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você tem dúvidas? ')
+    if conf == 'N':
+        print('Até a próxima')
 `,
   },
   {
     before: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
 
-  if conf == 'não':
-    print('Até a próxima')
+    if conf == 'não':
+        print('Até a próxima')
 `,
     after: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
   },
   {
     before: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
     after: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
 
 
-  print('Pratique mais')
+    print('Pratique mais')
 
-
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    conf = input('Você ainda tem dúvidas? ')
+print("Até a próxima")
 `,
   },
   {
@@ -234,19 +232,19 @@ while conf != 'não':
     after: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'não':
-  print('Pratique mais')
-  conf = input('Você ainda tem dúvidas? ')
-  if conf == 'não':
-    print('Até a próxima')
+    print('Pratique mais')
+    conf = input('Você ainda tem dúvidas? ')
+    if conf == 'não':
+        print('Até a próxima')
 `,
   },
   {
     before: `
 conf = input('Você ainda tem dúvidas? ')
 while conf != 'N':
-  print('Pratique mais')
-  if conf == 'N':
-    print('Até a próxima')
+    print('Pratique mais')
+    if conf == 'N':
+        print('Até a próxima')
 `,
     after: ``,
   },
