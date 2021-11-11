@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import colorTheme from "./colorTheme";
-import { diffLines, Change } from "diff";
-import { range } from "../../helpers";
+import { diffLines } from "diff";
 import { useToggle } from "../../hooks/useToggle";
+import { processBlocks, processLines, TLine } from "./utils";
 
 interface ICodeDiffProps {
   left: string;
@@ -12,10 +12,6 @@ interface ICodeDiffProps {
   rightTitle?: string;
   language?: "python" | "css" | "javascript";
   title?: number;
-}
-interface DiffBlock extends Change {
-  isAdditionOnly?: boolean;
-  isDeletionOnly?: boolean;
 }
 
 export function CodeDiff({
@@ -33,112 +29,8 @@ export function CodeDiff({
       newlineIsToken: false,
     });
 
-    const leftBlocks: DiffBlock[] = [];
-    const rightBlocks: DiffBlock[] = [];
-
-    diff.forEach((currentBlock, index) => {
-      if (!currentBlock.added && !currentBlock.removed) {
-        leftBlocks.push(currentBlock);
-        rightBlocks.push(currentBlock);
-        return;
-      }
-
-      const previousBlock = diff[index - 1];
-      const nextBlock = diff[index + 1];
-
-      const paddingBlock = {
-        value: "",
-        added: false,
-        removed: false,
-        count: currentBlock.count,
-      };
-
-      const isAddition = !!currentBlock.added;
-      const isDeletion = !!currentBlock.removed;
-
-      const nextIsNotAdditin = !nextBlock || !nextBlock.added;
-      const previousIsNotDeletion = !previousBlock || !previousBlock?.removed;
-
-      const isAdditionOnly = isAddition && previousIsNotDeletion;
-      const isDeletionOnly = isDeletion && nextIsNotAdditin;
-
-      if (isAdditionOnly) {
-        leftBlocks.push({ ...paddingBlock, isAdditionOnly });
-        rightBlocks.push(currentBlock);
-        return;
-      }
-      if (isDeletionOnly) {
-        leftBlocks.push(currentBlock);
-        rightBlocks.push({ ...paddingBlock, isDeletionOnly });
-        return;
-      }
-
-      if (isAddition) {
-        rightBlocks.push(currentBlock);
-      } else if (isDeletion) {
-        leftBlocks.push(currentBlock);
-      } else {
-        leftBlocks.push(currentBlock);
-        rightBlocks.push(currentBlock);
-      }
-    });
-
-    const [leftLines, rightLines] = leftBlocks.reduce(
-      (accumulator, _, currentIndex) => {
-        const leftBlock = leftBlocks[currentIndex];
-        const rightBlock = rightBlocks[currentIndex];
-
-        const [leftLines, rightLines] = accumulator;
-
-        const newLeftLines = leftBlock.value
-          .replace(/\n$/, "")
-          .split("\n")
-          .map<ILine>((line, idx) => ({
-            lineNumber: String(
-              leftLines.filter((l) => !l.isPadding).length + idx + 1,
-            ),
-            added: leftBlock.added,
-            removed: leftBlock.removed,
-            value: line,
-            isPadding: !!leftBlock.isAdditionOnly,
-          }));
-
-        const newRightLines = rightBlock.value
-          .replace(/\n$/, "")
-          .split("\n")
-          .map<ILine>((line, idx) => ({
-            lineNumber: String(
-              rightLines.filter((l) => !l.isPadding).length + idx + 1,
-            ),
-            added: rightBlock.added,
-            removed: rightBlock.removed,
-            value: line,
-            isPadding: !!rightBlock.isDeletionOnly,
-          }));
-
-        const removedLines = newLeftLines.length || 0;
-        const addedLines = newRightLines.length || 0;
-
-        const paddingCount = Math.abs(removedLines - addedLines);
-        const hasLeftPadding = removedLines < addedLines;
-        const hasRightPadding = removedLines > addedLines;
-
-        const generatePadding = (): ILine => ({ isPadding: true });
-
-        const leftPadding = hasLeftPadding
-          ? range(paddingCount).map(generatePadding)
-          : [];
-        const rightPadding = hasRightPadding
-          ? range(paddingCount).map(generatePadding)
-          : [];
-
-        return [
-          [...leftLines, ...newLeftLines, ...leftPadding],
-          [...rightLines, ...newRightLines, ...rightPadding],
-        ];
-      },
-      [[] as ILine[], [] as ILine[]],
-    );
+    const [leftBlocks, rightBlocks] = processBlocks(diff);
+    const [leftLines, rightLines] = processLines(leftBlocks, rightBlocks);
 
     return { leftLines, rightLines };
   }, [left, right]);
@@ -146,33 +38,17 @@ export function CodeDiff({
   return (
     <div className="rounded mt-2 lg:mt-0 overflow-hidden compact-scrollbar">
       <div className="grid grid-cols-2 justify-items-stretch w-full ">
-        <RenderCells lines={leftLines} />
-        <RenderCells lines={rightLines} />
+        <RenderCells lines={leftLines} language={language} />
+        <RenderCells lines={rightLines} language={language} />
       </div>
     </div>
   );
 }
-
-type ILine =
-  | {
-      lineNumber: string;
-      value: string | undefined;
-      added: boolean | undefined;
-      removed: boolean | undefined;
-      isPadding: false;
-    }
-  | {
-      lineNumber?: string;
-      value?: string;
-      added?: boolean;
-      removed?: boolean;
-      isPadding: true;
-    };
-
 interface IRenderCellsProps {
-  lines: ILine[];
+  lines: TLine[];
+  language: string;
 }
-function RenderCells({ lines }: IRenderCellsProps) {
+function RenderCells({ lines, language }: IRenderCellsProps) {
   return (
     <div
       className="flex flex-col overflow-auto"
@@ -187,7 +63,11 @@ function RenderCells({ lines }: IRenderCellsProps) {
           line.isPadding ? (
             <Padding key={"padding_" + index} />
           ) : (
-            <Line key={"line_" + String(index) + line.lineNumber} line={line} />
+            <Line
+              key={"line_" + String(index) + line.lineNumber}
+              line={line}
+              language={language}
+            />
           ),
         )}
       </code>
@@ -196,9 +76,10 @@ function RenderCells({ lines }: IRenderCellsProps) {
 }
 
 interface ILineProps {
-  line: ILine;
+  line: TLine;
+  language: string;
 }
-function Line({ line }: ILineProps) {
+function Line({ line, language }: ILineProps) {
   const [selected, toggleSelect] = useToggle(false);
 
   const backgroundColor = line.added
@@ -220,7 +101,7 @@ function Line({ line }: ILineProps) {
       )}
       <span className="px-2">
         <SyntaxHighlighter
-          language={"python"}
+          language={language || "python"}
           style={colorTheme}
           PreTag={({ children }: any) => <span>{children}</span>}
           useInlineStyles={true}

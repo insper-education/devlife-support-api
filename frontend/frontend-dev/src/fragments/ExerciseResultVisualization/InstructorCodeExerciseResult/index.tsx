@@ -116,14 +116,14 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
         />
       )}
       <br />
-      {tests.map(({ before, after }, index) => (
+      {tests.map(({ before, after, language}, index) => (
         <Fragment key={"test_" + index}>
           <h1 className="text-lg text-center m-4 font-bold">Exemplo {index}</h1>
           <CodeDiff
             left={before}
             right={after}
             title={index}
-            language="python"
+            language={language as any || "python"}
           />
           <br />
         </Fragment>
@@ -134,6 +134,30 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
 
 const tests = [
   { before: "", after: "" },
+  {
+    language:"javascript",
+    before: `
+let conf = userResponse();
+
+while (conf != "nao") {
+  console.log("Pratique mais")
+  conf = userResponse();
+  if (conf === "nao") {
+    console.log("até a próxima")
+  }
+}
+`,
+    after: `
+let conf = userResponse();
+
+while (conf != "nao") {
+  console.log("Pratique mais")
+  conf = userResponse();
+
+console.log("até a próxima")
+}
+`,
+  },
   {
     before: `
 conf = input('Você ainda tem dúvidas? ')
