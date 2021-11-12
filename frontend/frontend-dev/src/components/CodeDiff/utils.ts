@@ -1,30 +1,10 @@
 import { Change } from "diff";
 import { range } from "../../helpers";
-
-export interface DiffBlock extends Change {
-  isAdditionOnly?: boolean;
-  isDeletionOnly?: boolean;
-}
-
-export type TLine =
-  | {
-      lineNumber: string;
-      value: string | undefined;
-      added: boolean | undefined;
-      removed: boolean | undefined;
-      isPadding: false;
-    }
-  | {
-      lineNumber?: string;
-      value?: string;
-      added?: boolean;
-      removed?: boolean;
-      isPadding: true;
-    };
+import { IDiffBlock, TLine } from "./typeDefinitions";
 
 export function processBlocks(diff: Change[]) {
-  const leftBlocks: DiffBlock[] = [];
-  const rightBlocks: DiffBlock[] = [];
+  const leftBlocks: IDiffBlock[] = [];
+  const rightBlocks: IDiffBlock[] = [];
 
   diff.forEach((currentBlock, index) => {
     if (!currentBlock.added && !currentBlock.removed) {
@@ -76,8 +56,8 @@ export function processBlocks(diff: Change[]) {
 }
 
 export function processLines(
-  leftBlocks: DiffBlock[],
-  rightBlocks: DiffBlock[],
+  leftBlocks: IDiffBlock[],
+  rightBlocks: IDiffBlock[],
 ) {
   const [leftLines, rightLines] = leftBlocks.reduce(
     (accumulator, _, currentIndex) => {

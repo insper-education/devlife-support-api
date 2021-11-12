@@ -9,7 +9,7 @@ export interface ICodeDiffProps {
   title?: number;
 }
 
-export interface DiffBlock extends Change {
+export interface IDiffBlock extends Change {
   isAdditionOnly?: boolean;
   isDeletionOnly?: boolean;
 }
