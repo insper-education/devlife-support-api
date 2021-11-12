@@ -20,7 +20,6 @@ export function CodeDiff({
     });
 
     const [leftBlocks, rightBlocks] = processBlocks(diff);
-
     const [leftLines, rightLines] = processLines(leftBlocks, rightBlocks);
 
     return { leftLines, rightLines };

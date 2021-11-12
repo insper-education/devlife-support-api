@@ -72,7 +72,6 @@ export function processBlocks(diff: Change[]) {
       rightBlocks.push(currentBlock);
     }
   });
-
   return [leftBlocks, rightBlocks];
 }
 
