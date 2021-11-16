@@ -67,7 +67,7 @@ class Teaches(models.Model):
 
 class Exercise(models.Model):
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=255)
     url = models.URLField()
     topic = models.CharField(max_length=1024)
     group = models.CharField(max_length=1024)
