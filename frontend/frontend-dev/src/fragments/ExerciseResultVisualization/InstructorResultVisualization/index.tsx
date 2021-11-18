@@ -11,6 +11,7 @@ import Title from "../../../components/Title";
 import { MultipleChoiceAnswers } from "../InstructorMultipleChoiceExercise";
 import { CodeExerciseResult } from "../InstructorCodeExerciseResult";
 import { TextAnswersResults } from "../InstructorTextExercise";
+import { getName, IExercise } from "../../../models/Exercise";
 
 interface IExerciseAnswersParams {
   offering: number;
@@ -57,7 +58,7 @@ function UnmemoizedInstructorResultColumn({
   return (
     <Container>
       <div className="mt-4 fit-content">
-        <Title variant={5}>{slug || ""}</Title>
+        <Title variant={5}>{getName(selectedData as IExercise)}</Title>
       </div>
 
       <section className="flex flex-col w-full">

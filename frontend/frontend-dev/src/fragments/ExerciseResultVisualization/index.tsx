@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ExercisesProvider } from "../../contexts/ExercisesContext";
 import { useExerciseContext } from "../../hooks/useExerciseContext";
-import { IExerciseGroups } from "../../models/Exercise";
+import { getName, IExerciseGroups } from "../../models/Exercise";
 import Column from "./Column";
 import { InstructorResultColumn } from "./InstructorResultVisualization";
 import ResultColumn from "./ResultColumn";
@@ -55,7 +54,7 @@ const ExerciseResultVisualization = ({
     const exerciseList = contentGroups[contentGroup];
     setExercises(
       Object.keys(contentGroups) && contentGroup
-        ? exerciseList.map((exercise) => exercise.slug)
+        ? exerciseList.map(getName)
         : [],
     );
     if (exerciseList)

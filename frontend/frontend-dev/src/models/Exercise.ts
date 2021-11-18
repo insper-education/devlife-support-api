@@ -40,3 +40,16 @@ export const groupByTopicAndContent = (
 
   return groups;
 };
+
+export const getName = (exercise: IExercise) => {
+  const slug = exercise?.slug;
+  if (!slug) return "";
+
+  const parts = slug.split("-");
+  const name = parts[parts.length - 1].split("_").join(" ");
+  if (exercise.type) {
+    return `[${exercise.type}] ${name}`;
+  } else {
+    return slug;
+  }
+};
