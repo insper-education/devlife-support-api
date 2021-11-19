@@ -28,5 +28,9 @@
   "Attempts": "Tentativas",
   "Tests passing": "Testes passando",
   "Your solution": "Sua solução",
-  "or": "ou"
+  "or": "ou",
+  "Please wait": "Por favor aguarde",
+  "Redirecting": "Redirecionando",
+  "we are redirecting you to the requested page": "estamos te redirecionando para a página solicitada",
+  "click \"Open Visual Studio Code\" on the dialog to continue": "clique em \"Abrir Visual Studio Code\" para continuar"
 }

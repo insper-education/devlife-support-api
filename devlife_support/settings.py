@@ -148,14 +148,17 @@ STATICFILES_DIRS = [
     "frontend/frontend-dev/build/",
 ]
 
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+
 DEFAULT_DUMMY_EMAIL = "dummy@email.com"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", DEFAULT_DUMMY_EMAIL)
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-if EMAIL_HOST_USER != DEFAULT_DUMMY_EMAIL:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
+if EMAIL_HOST_USER != DEFAULT_DUMMY_EMAIL and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+    EMAIL_BACKEND = 'django_ses.SESBackend'
+    AWS_SES_REGION_NAME = 'sa-east-1'
+    AWS_SES_REGION_ENDPOINT = 'email.sa-east-1.amazonaws.com'
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

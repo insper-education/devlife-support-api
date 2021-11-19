@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import useQuery from "../../hooks/useQuery";
 import LoginForm from "./LoginForm";
 import SignInContainer from "../../fragments/SignInContainer";
+import RedirectingPage from "./RedirectingPage";
 
 const Login = () => {
   const { user, removeUser } = useUser();
@@ -27,11 +28,15 @@ const Login = () => {
     }
   }, [history, params, user, removeUser, decodedRedirectTo]);
 
-  return (
-    <SignInContainer>
-      <LoginForm />
-    </SignInContainer>
-  );
+  if (user?.token && decodedRedirectTo) {
+    return <RedirectingPage redirectTo={decodedRedirectTo} />;
+  } else {
+    return (
+      <SignInContainer>
+        <LoginForm />
+      </SignInContainer>
+    );
+  }
 };
 
 export default Login;
