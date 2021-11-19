@@ -3,6 +3,8 @@ import { diffLines } from "diff";
 import { processBlocks, processLines } from "./utils";
 import { ICodeBlockProps, ICodeDiffProps } from "./typeDefinitions";
 import { Line, PaddingLine } from "./Line";
+import "./styles.css";
+import { useToggle } from "../../hooks/useToggle";
 
 export function CodeDiff({
   left,
@@ -27,21 +29,28 @@ export function CodeDiff({
 
   return (
     <div className="rounded mt-2 lg:mt-0 overflow-hidden compact-scrollbar">
-      <div className="grid grid-cols-2 justify-items-stretch w-full ">
-        <CodeBlock lines={leftLines} language={language} />
-        <CodeBlock lines={rightLines} language={language} />
+      <div className="grid grid-flow-row-dense gap-0.5 sm:gap-0 sm:grid-cols-2 sm:grid-rows-1 justify-items-stretch w-full ">
+        <CodeBlock
+          lines={leftLines}
+          language={language}
+          description={leftTitle}
+        />
+        <CodeBlock
+          lines={rightLines}
+          language={language}
+          description={rightTitle}
+        />
       </div>
     </div>
   );
 }
 
-function CodeBlock({ lines, language }: ICodeBlockProps) {
+function CodeBlock({ lines, language, description }: ICodeBlockProps) {
   return (
     <div
-      className="flex flex-col overflow-auto text-primary-600"
+      className="codeVisualizer flex flex-col overflow-auto rounded sm:rounded-none"
       style={{
         backgroundColor: "#2f323e",
-        // color: "#76d9e6",
       }}>
       <code
         className="min-w-max w-full"

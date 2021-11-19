@@ -26,11 +26,11 @@ export function processBlocks(diff: Change[]) {
     const isAddition = !!currentBlock.added;
     const isDeletion = !!currentBlock.removed;
 
-    const nextIsNotAdditin = !nextBlock || !nextBlock.added;
+    const nextIsNotAddition = !nextBlock || !nextBlock.added;
     const previousIsNotDeletion = !previousBlock || !previousBlock?.removed;
 
     const isAdditionOnly = isAddition && previousIsNotDeletion;
-    const isDeletionOnly = isDeletion && nextIsNotAdditin;
+    const isDeletionOnly = isDeletion && nextIsNotAddition;
 
     if (isAdditionOnly) {
       leftBlocks.push({ ...paddingBlock, isAdditionOnly });

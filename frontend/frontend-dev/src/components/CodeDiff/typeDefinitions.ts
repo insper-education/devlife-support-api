@@ -17,6 +17,7 @@ export interface IDiffBlock extends Change {
 export interface ICodeBlockProps {
   lines: TLine[];
   language: string;
+  description?: string;
 }
 
 export type TLine =
