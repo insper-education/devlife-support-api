@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Button from "../../../components/Button";
 import Title from "../../../components/Title";
 import { useUser } from "../../../contexts/user-context";
-import { IExercise } from "../../../models/Exercise";
+import { getName, IExercise } from "../../../models/Exercise";
 import { IUserAnswerSummaryMap } from "../../../models/UserAnswerSummary";
 import { useAnswer } from "../../../services/exercises";
 import { IAnswer } from "../../../models/Answer";
@@ -33,7 +33,7 @@ const CodeExerciseResult = ({
   return (
     <>
       <Title variant={5} className="px-4 mt-2">
-        {exercise?.slug || ""}
+        {getName(exercise)}
       </Title>
       <div className="px-4 mt-4 max-w-full">
         <Button className="uppercase tracking-wide">Ver Exercício</Button>
