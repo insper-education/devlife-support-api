@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Table } from "../../../components/Table";
 import Button from "../../../components/Button";
@@ -91,13 +91,6 @@ export function CodeExerciseResult({ codeAnswers }: ICodeResultProps) {
                     />
                   </label>
                 ),
-                // compare: (
-                //   <Button
-                //     onClick={() => selectToCompare(codePk, codeText)}
-                //     disabled={comparing.length > 1 && !itemIsComparing}>
-                //     {itemIsComparing ? "Ocultar" : "Comparar"}
-                //   </Button>
-                // ),
               };
             })}
           />

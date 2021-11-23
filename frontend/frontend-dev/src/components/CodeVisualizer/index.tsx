@@ -21,7 +21,7 @@ export function CodeVisualizer({
         wrapLines={false}
         lineNumberStyle={{
           fontWeight: "bold",
-          color: "##555a7b",
+          color: "#555a7b",
           padding: "0.25rem 0.5rem",
           marginLeft: "-0.5rem",
           userSelect: "none",

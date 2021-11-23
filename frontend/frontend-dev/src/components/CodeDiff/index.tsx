@@ -4,7 +4,6 @@ import { processBlocks, processLines } from "./utils";
 import { ICodeBlockProps, ICodeDiffProps } from "./typeDefinitions";
 import { Line, PaddingLine } from "./Line";
 import "./styles.css";
-import { useToggle } from "../../hooks/useToggle";
 
 export function CodeDiff({
   left,
