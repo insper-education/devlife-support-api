@@ -1,0 +1,113 @@
+/* PrismJS 1.25.0
+https://prismjs.com/download.html#themes=prism-coy&languages=markup+css+clike+javascript+c+python */
+.codeVisualizer code[class*="language-"],
+.codeVisualizer pre[class*="language-"] {
+  background: 0 0;
+  color: #76d9e6;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-size: 1em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+.codeVisualizer pre[class*="language-"] {
+  position: relative;
+  margin: 0.5em 0;
+  overflow: visible;
+  padding: 1px;
+}
+
+.codeVisualizer :not(pre) > code[class*="language-"],
+.codeVisualizer pre[class*="language-"] {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: 1em;
+}
+
+.codeVisualizer .token.block-comment,
+.codeVisualizer .token.cdata,
+.codeVisualizer .token.comment,
+.codeVisualizer .token.doctype,
+.codeVisualizer .token.prolog {
+  color: #6f705e;
+}
+
+.codeVisualizer .token.punctuation {
+  color: #bebec5;
+}
+
+.codeVisualizer .token.boolean,
+.codeVisualizer .token.constant,
+.codeVisualizer .token.deleted,
+.codeVisualizer .token.function-name,
+.codeVisualizer .token.number,
+.codeVisualizer .token.property,
+.codeVisualizer .token.symbol,
+.codeVisualizer .token.tag {
+  color: #a77afe;
+}
+
+.codeVisualizer .token.attr-name,
+.codeVisualizer .token.builtin,
+.codeVisualizer .token.char,
+.codeVisualizer .token.inserted,
+.codeVisualizer .token.selector,
+.codeVisualizer .token.string {
+  color: #e6d06c;
+}
+
+.codeVisualizer .token.function,
+.codeVisualizer .token.method {
+  color: #ef3b7d;
+}
+.codeVisualizer .token.entity,
+.codeVisualizer .token.operator,
+.codeVisualizer .token.url,
+.codeVisualizer .token.variable {
+  color: #a77afe;
+}
+.codeVisualizer .token.class-name {
+  color: #76d9e6;
+}
+.codeVisualizer .token.atrule,
+.codeVisualizer .token.attr-value,
+.codeVisualizer .token.keyword {
+  color: #ef3b7d;
+  font-weight: bold;
+}
+.codeVisualizer .token.important,
+.codeVisualizer .token.regex {
+  color: #ef3b7d;
+}
+.codeVisualizer .language-css .token.string,
+.codeVisualizer .style .token.string {
+  color: #e6d06c;
+}
+
+.codeVisualizer .token.important {
+  font-weight: 400;
+}
+.codeVisualizer .token.bold {
+  font-weight: 700;
+}
+.codeVisualizer .token.italic {
+  font-style: italic;
+}
+.codeVisualizer .token.entity {
+  cursor: help;
+}
+.codeVisualizer .token.namespace {
+  opacity: 0.7;
+}

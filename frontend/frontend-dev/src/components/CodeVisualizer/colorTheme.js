@@ -28,7 +28,7 @@ export default {
     fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
     fontSize: "14px",
     textShadow: "none",
-    background: "#2a2a2a",
+    background: "#202533",
     padding: "15px",
     borderRadius: "4px",
     border: "1px solid #e1e1e8",
@@ -107,7 +107,6 @@ export default {
   },
   keyword: {
     color: "#ef3b7d",
-    fontWeight: "bold",
   },
   important: {
     color: "#ef3b7d",
