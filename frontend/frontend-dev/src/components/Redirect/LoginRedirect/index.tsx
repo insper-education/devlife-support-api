@@ -10,7 +10,8 @@ const LoginRedirect = () => {
   if (
     !user &&
     !matchPath(location.pathname, routesData[routes.LOGIN].props) &&
-    !matchPath(location.pathname, routesData[routes.PASSWORD_RESET].props)
+    !matchPath(location.pathname, routesData[routes.PASSWORD_RESET].props) &&
+    !matchPath(location.pathname, routesData[routes.PASSWORD_LOST].props) 
   )
     return (
       <Redirect

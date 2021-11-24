@@ -3,12 +3,14 @@ import { IUser } from "../models/User";
 import InstructorHome from "../screens/InstructorHome";
 import Login from "../screens/Login";
 import PasswordChange from "../screens/PasswordChange";
+import PasswordLost from "../screens/PasswordLost";
 import StudentHome from "../screens/StudentHome";
 
 export enum routes {
   STUDENT_HOME = "/",
   INSTRUCTOR_HOME = "/instructor",
   LOGIN = "/login",
+  PASSWORD_LOST = "/password-lost",
   PASSWORD_RESET = "/password-reset/:uid/:token/",
 }
 
@@ -51,6 +53,14 @@ routesData[routes.PASSWORD_RESET] = {
     exact: true,
     component: PasswordChange,
   },
+};
+routesData[routes.PASSWORD_LOST] = {
+  title: "Lost password",
+  props: {
+    path: routes.PASSWORD_LOST,
+    exact: true,
+    component: PasswordLost
+  }
 };
 
 export const navRoutes: string[] = [routes.INSTRUCTOR_HOME];

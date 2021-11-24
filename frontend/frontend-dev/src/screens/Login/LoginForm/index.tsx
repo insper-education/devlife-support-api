@@ -11,6 +11,8 @@ import LoadingIndicator from "../../../components/LoadingIndicator";
 import Separator from "../../../components/Separator";
 import { useUser } from "../../../contexts/user-context";
 import useQuery from "../../../hooks/useQuery";
+import { routes } from "../../../routes";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const mounted = useRef(true);
@@ -94,6 +96,7 @@ const LoginForm = () => {
           disabled={loading}>
           {t("Sign in")}
         </Button>
+        
         {loading && (
           <div className="w-full flex justify-center">
             <LoadingIndicator className="text-xs" />
@@ -102,6 +105,7 @@ const LoginForm = () => {
       </Form>
       <Separator>{t("or")}</Separator>
       <p>{t("Ask the instructor to sign you up")}</p>
+      <Link to={routes.PASSWORD_LOST}>{t("Reset password")}</Link>
     </>
   );
 };
