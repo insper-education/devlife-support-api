@@ -6,7 +6,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
-from .models import Answer, Offering, User, Exercise, UserAnswerSummary
+from .models import Answer, Offering, User, Exercise, UserAnswerSummary,Student
 from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
 from .permissions import IsAdminOrSelf, IsAdminUser, IsEnrolledInOfferingOrIsStaff
 
@@ -75,6 +75,15 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, off_pk=None, ex_slug=None):
+        get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+
+        all_answers = Answer.objects.filter(exercise=exercise)
+        all_answers_json = AnswerSerializer(all_answers, many=True)
+
+        return Response(all_answers_json.data, status=status.HTTP_200_OK)
 
 
 def user_filter(request):
@@ -145,3 +154,7 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
     all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
 
     return Response(all_summaries_json.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_all_answers_from_student(request, off_pk, ex_slug):
