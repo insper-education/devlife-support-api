@@ -8,11 +8,10 @@ from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import ExerciseViewSet ,list_summaries
+from .views import AnswerViewSet, ExerciseViewSet, list_students_that_tried_exercise ,list_summaries
 
 # Include tests from blackboard_utils
 from .blackboard_utils.tests import *
-
 
 class AnswerSignalTestCase(TestCase):
     def setUp(self):
@@ -293,3 +292,153 @@ class PasswordResetEmailTestCase(APITestCase):
         self.assertEqual(len(mail.outbox), 1)
         for email in mail.outbox:
             self.assert_reset_email(email, _("[DevLife] Set password"), user, True)
+
+
+class AnswerViewSetTestCase(TestCase):
+    def setUp(self) -> None:
+        self.student1 = Student.objects.create_user(username="john.doe", password="1234")
+        self.student2 = Student.objects.create_user(username="john.dois", password="1234")
+        self.instructor = Instructor.objects.create_user(
+            username="bill.doors", password="4567"
+        )
+
+        self.course = Course.objects.create(name="Walls OS")
+        self.offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS"
+        )
+        Enrollment.objects.create(
+            student=self.student1, offering=self.offering
+        )
+        Enrollment.objects.create(
+            student=self.student2, offering=self.offering
+        )
+        self.teaches = Teaches.objects.create(
+            instructor=self.instructor, offering=self.offering
+        )
+        self.exercise1 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+        
+        self.answer_s1 = Answer.objects.create(
+            exercise=self.exercise1,
+            user=self.student1,
+            points=1,
+            test_results={},
+            student_input={}
+        )
+        self.answer_s2 = Answer.objects.create(
+            exercise=self.exercise1,
+            user=self.student2,
+            points=1,
+            test_results={},
+            student_input={}
+        )
+    
+    def test_student_lists_their_own_answers(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers')
+        force_authenticate(req_list, self.student1)
+
+        view = AnswerViewSet.as_view({'get': 'list'})
+        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 200
+        assert all([el['pk'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+    
+    def test_student_lists_their_own_answers_even_if_asking_for_other_student(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2/')
+        force_authenticate(req_list, self.student1)
+
+        view = AnswerViewSet.as_view({'get': 'list'})
+        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug, student_pk=2)
+        assert resp.status_code == 200
+        assert all([el['pk'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+        
+    def test_instructor_lists_all_answers(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers')
+        force_authenticate(req_list, self.instructor)
+
+        view = AnswerViewSet.as_view({'get': 'list'})
+        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 200
+        assert all([el['pk'] == self.student1.pk or
+                    el['pk'] == self.student2.pk for el in resp.data]), \
+                    'Resultado contém respostas de outro aluno!'
+    
+    def test_instructor_lists_all_answers_from_student(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2')
+        force_authenticate(req_list, self.instructor)
+
+        view = AnswerViewSet.as_view({'get': 'list'})
+        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug, student_pk=2)
+        assert resp.status_code == 200
+        assert all([el['pk'] == self.student2.pk for el in resp.data]), \
+                    'Pediu respostas de 2, mas resultado contém respostas de outro aluno!'
+
+
+
+class CodeExerciseBackend(TestCase):
+    def setUp(self) -> None:
+        self.student1 = Student.objects.create_user(username="john.um", password="1234")
+        self.student2 = Student.objects.create_user(username="john.doe", password="1234")
+        self.student3 = Student.objects.create_user(username="john.tres", password="1234")
+
+        self.instructor = Instructor.objects.create_user(
+            username="bill.doors", password="4567"
+        )
+
+        self.course = Course.objects.create(name="Walls OS")
+        self.offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS"
+        )
+        Enrollment.objects.create(
+            student=self.student1, offering=self.offering
+        )
+        Enrollment.objects.create(
+            student=
+            self.student2, offering=self.offering
+        )
+        Enrollment.objects.create(
+            student=self.student3, offering=self.offering
+        )
+        self.teaches = Teaches.objects.create(
+            instructor=self.instructor, offering=self.offering
+        )
+        self.exercise1 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+        
+        self.answer_s1 = Answer.objects.create(
+            exercise=self.exercise1,
+            user=self.student1,
+            points=1,
+            test_results={},
+            student_input={}
+        )
+        self.answer_s2 = Answer.objects.create(
+            exercise=self.exercise1,
+            user=self.student2,
+            points=1,
+            test_results={},
+            student_input={}
+        )
+    
+    def test_list_students_that_tried_exercise(self):
+        fac = APIRequestFactory()
+        req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students')
+        force_authenticate(req_list, self.instructor)
+
+        resp = list_students_that_tried_exercise(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 200
+        breakpoint()
+        assert self.student1 in resp.data, 'Student1 não está na resposta, mas submeteu exercícios para o exercício!'
+        assert self.student2 in resp.data, 'Student2 não está na resposta, mas submeteu exercícios para o exercício!'
+        assert not self.student3 in resp.data, 'Student3 está na resposta, mas não submeteu exercícios para o exercício!'

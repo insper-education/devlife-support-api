@@ -55,7 +55,16 @@ class AnswerViewSet(viewsets.ModelViewSet):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
         exercise = get_object_or_404(Exercise, slug=self.kwargs.get('ex_slug'))
 
-        return Answer.objects.filter(exercise=exercise)
+        filters = {
+            'exercise': exercise
+        }
+
+        if 'student_pk' in self.kwargs and self.request.user.is_staff:
+            filters['user'] = self.kwargs.get('student_pk')
+        elif not self.request.user.is_staff:
+            filters['user'] = self.request.user
+
+        return Answer.objects.filter(**filters)
 
     def create(self, request, off_pk=None, ex_slug=None):
         get_object_or_404(Offering, pk=off_pk)
@@ -75,16 +84,6 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def list(self, request, off_pk=None, ex_slug=None):
-        get_object_or_404(Offering, pk=off_pk)
-        exercise = get_object_or_404(Exercise, slug=ex_slug)
-
-        all_answers = Answer.objects.filter(exercise=exercise)
-        all_answers_json = AnswerSerializer(all_answers, many=True)
-
-        return Response(all_answers_json.data, status=status.HTTP_200_OK)
-
 
 def user_filter(request):
     user_pk = request.user.pk
@@ -157,4 +156,11 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
-def get_all_answers_from_student(request, off_pk, ex_slug):
+def list_students_that_tried_exercise(request, off_pk, ex_slug):
+    get_object_or_404(Offering, pk=off_pk)
+    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    all_students = exercise.answer_set.all().distinct('user')
+    all_students_json = UserSerializer(all_students, many=True)
+
+    return Response(all_students_json.data, status=status.HTTP_200_OK)
+
