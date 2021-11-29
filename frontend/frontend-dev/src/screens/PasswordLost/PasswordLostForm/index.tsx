@@ -1,11 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
+import Title from "../../../components/Title";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Button from "../../../components/Button";
 import Form from "../../../components/Form";
-import LoadingIndicator from "../../../components/LoadingIndicator";
 import { PASSWORD_LOST_PATH } from "../../../services/routes";
 import { IPasswordResetInputs, passwordResetSchema } from "../schema";
 
@@ -41,8 +41,8 @@ const PasswordLostForm = () => {
           },
         }
       )
-      .then((resp) => {})
-      .catch((resp) => {})
+      .then((resp) => { })
+      .catch((resp) => { })
       .finally(() => {
         setFinished(true);
       });
@@ -50,25 +50,27 @@ const PasswordLostForm = () => {
 
   return (
     <>
-      {!loading && (
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.TextInput
-            label={t("Email")}
-            placeholder={t("Type email")}
-            inputId="email"
-            onChange={handleEmailChange}
-            {...emailInputProps}
-          />
-          <Button label={t("Enviar")} type="submit">
-            {t("Reset password")}
-          </Button>
-        </Form>
-      )}
-
-      {loading && !finished && (
-        <div className="w-full flex justify-center">
-          <LoadingIndicator className="text-xs" />
-        </div>
+      {!finished && (
+        <>
+          <Title variant={5} className="mb-4">{t("Lost password")}</Title>
+          {t('lost password message')}
+          <Form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+            <Form.TextInput
+              placeholder={t("Type email")}
+              inputId="email"
+              onChange={handleEmailChange}
+              disabled={loading}
+              {...emailInputProps}
+            />
+            <Button
+              variant="secondary"
+              className="mt-2 w-full"
+              type="submit"
+              disabled={loading}>
+              {t("Reset password")}
+            </Button>
+          </Form>
+        </>
       )}
 
       {finished && (

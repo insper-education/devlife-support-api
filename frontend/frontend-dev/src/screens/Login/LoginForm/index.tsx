@@ -12,7 +12,7 @@ import Separator from "../../../components/Separator";
 import { useUser } from "../../../contexts/user-context";
 import useQuery from "../../../hooks/useQuery";
 import { routes } from "../../../routes";
-import { Link } from "react-router-dom";
+import Link from '../../../components/Link';
 
 const LoginForm = () => {
   const mounted = useRef(true);
@@ -85,10 +85,9 @@ const LoginForm = () => {
           onChange={handlePasswordChange}
           error={t(errors?.password?.message || "")}
         />
-        {invalidLogin && (
-          <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
-        )}
-        {!!reason && <ErrorMessage>{t(reason || "")}</ErrorMessage>}
+        <Link to={routes.PASSWORD_LOST} className="w-100 block text-right -mt-3 mb-4">
+          {t('Reset password')}
+        </Link>
         <Button
           variant="secondary"
           className="mt-2 w-full"
@@ -96,7 +95,11 @@ const LoginForm = () => {
           disabled={loading}>
           {t("Sign in")}
         </Button>
-        
+        {invalidLogin && (
+          <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
+        )}
+        {!!reason && <ErrorMessage>{t(reason || "")}</ErrorMessage>}
+
         {loading && (
           <div className="w-full flex justify-center">
             <LoadingIndicator className="text-xs" />
@@ -105,7 +108,6 @@ const LoginForm = () => {
       </Form>
       <Separator>{t("or")}</Separator>
       <p>{t("Ask the instructor to sign you up")}</p>
-      <Link to={routes.PASSWORD_LOST}>{t("Reset password")}</Link>
     </>
   );
 };

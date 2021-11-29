@@ -7,5 +7,7 @@
   "Invalid password reset link": "Invalid password reset link. Request a new link to reset your password.",
   "Invalid credentials": "Wrong username or password",
   "not-admin": "You don't have permission to access this page. Please log in with an authorized user.",
-  "submissions sent before": "{{users}} students submitted {{total}} answers before {{lastUpdate}}"
+  "submissions sent before": "{{users}} students submitted {{total}} answers before {{lastUpdate}}",
+  "lost password message": "Enter your email and we'll send you instructions to reset your password."
+
 }
