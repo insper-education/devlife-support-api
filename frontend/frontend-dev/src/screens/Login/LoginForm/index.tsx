@@ -11,6 +11,8 @@ import LoadingIndicator from "../../../components/LoadingIndicator";
 import Separator from "../../../components/Separator";
 import { useUser } from "../../../contexts/user-context";
 import useQuery from "../../../hooks/useQuery";
+import { routes } from "../../../routes";
+import Link from '../../../components/Link';
 
 const LoginForm = () => {
   const mounted = useRef(true);
@@ -83,10 +85,9 @@ const LoginForm = () => {
           onChange={handlePasswordChange}
           error={t(errors?.password?.message || "")}
         />
-        {invalidLogin && (
-          <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
-        )}
-        {!!reason && <ErrorMessage>{t(reason || "")}</ErrorMessage>}
+        <Link to={routes.PASSWORD_LOST} className="w-100 block text-right -mt-3 mb-4">
+          {t('Reset password')}
+        </Link>
         <Button
           variant="secondary"
           className="mt-2 w-full"
@@ -94,6 +95,11 @@ const LoginForm = () => {
           disabled={loading}>
           {t("Sign in")}
         </Button>
+        {invalidLogin && (
+          <ErrorMessage>{t("Invalid credentials")}</ErrorMessage>
+        )}
+        {!!reason && <ErrorMessage>{t(reason || "")}</ErrorMessage>}
+
         {loading && (
           <div className="w-full flex justify-center">
             <LoadingIndicator className="text-xs" />

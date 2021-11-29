@@ -1,6 +1,7 @@
 // AUTHENTICATION
 export const USER_DATA_PATH = "/api/auth/user/";
 export const LOGIN_PATH = "/api/auth/login/";
+export const PASSWORD_LOST_PATH = "/api/auth/password/reset/";
 export const PASSWORD_RESET_PATH = "/api/auth/password/reset/confirm/";
 
 // EXERCISES
