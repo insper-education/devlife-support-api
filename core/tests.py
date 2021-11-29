@@ -1,3 +1,4 @@
+from django.http import response
 from core.permissions import IsEnrolledInOfferingOrIsStaff
 from django.utils.translation import gettext as _
 from django.conf import settings
@@ -165,7 +166,7 @@ class IsEnrolledPermisson(TestCase):
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/')
         force_authenticate(req_list, self.student1)
         viewset = ExerciseViewSet.as_view({'get': 'list', 'post': 'create'})
-        resp = viewset(req_list, off_pk=1)
+        resp = viewset(req_list, off_pk=self.offering.pk)
         assert resp.status_code == 200, 'Student should list all exercises'
 
 
@@ -177,7 +178,7 @@ class IsEnrolledPermisson(TestCase):
                 'slug': 'a-b-c'
             })
         force_authenticate(req_create, self.student1)
-        resp = viewset(req_create, off_pk=1)
+        resp = viewset(req_create, off_pk=self.offering.pk)
         assert resp.status_code == 403, 'Student should not be able to create exercises'
 
     def test_instructor_list_create_exercises_in_offering(self):
@@ -185,7 +186,7 @@ class IsEnrolledPermisson(TestCase):
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/')
         force_authenticate(req_list, self.prof1)
         viewset = ExerciseViewSet.as_view({'get': 'list', 'post': 'create'})
-        resp = viewset(req_list, off_pk=1)
+        resp = viewset(req_list, off_pk=self.offering.pk)
         assert resp.status_code == 200, f'Instructor should be able to list all exercises. Got {resp.status_code}'
 
         req_create = fac.post(f'offerings/{self.offering.pk}/exercises/', data={
@@ -196,7 +197,7 @@ class IsEnrolledPermisson(TestCase):
                 'slug': 'a-b-c'
             })
         force_authenticate(req_create, self.prof1)
-        resp = viewset(req_create, off_pk=1)
+        resp = viewset(req_create, off_pk=self.offering.pk)
         assert resp.status_code == 201, 'Instructor should be able to create exercises'
 
     def test_student_list_summaries_enrolled(self):
@@ -204,7 +205,7 @@ class IsEnrolledPermisson(TestCase):
         req_list = fac.get(f'offerings/{self.offering.pk}/summaries/')
         force_authenticate(req_list, self.student1)
 
-        resp = list_summaries(req_list, off_pk=1)
+        resp = list_summaries(req_list, off_pk=self.offering.pk)
         assert resp.status_code == 200
 
     def test_student_list_summaries_not_enrolled(self):
@@ -321,7 +322,7 @@ class AnswerViewSetTestCase(TestCase):
             url="bill.doors.com/walls/",
             type=Exercise.ExerciseType.CODE,
         )
-        
+
         self.answer_s1 = Answer.objects.create(
             exercise=self.exercise1,
             user=self.student1,
@@ -336,46 +337,46 @@ class AnswerViewSetTestCase(TestCase):
             test_results={},
             student_input={}
         )
-    
+
     def test_student_lists_their_own_answers(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers')
         force_authenticate(req_list, self.student1)
 
         view = AnswerViewSet.as_view({'get': 'list'})
-        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 200
-        assert all([el['pk'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
-    
+        assert all([el['user'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+
     def test_student_lists_their_own_answers_even_if_asking_for_other_student(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2/')
         force_authenticate(req_list, self.student1)
 
         view = AnswerViewSet.as_view({'get': 'list'})
-        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug, student_pk=2)
+        resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug, student_pk=2)
         assert resp.status_code == 200
-        assert all([el['pk'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
-        
+        assert all([el['user'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+
     def test_instructor_lists_all_answers(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers')
         force_authenticate(req_list, self.instructor)
 
         view = AnswerViewSet.as_view({'get': 'list'})
-        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 200
-        assert all([el['pk'] == self.student1.pk or
-                    el['pk'] == self.student2.pk for el in resp.data]), \
+        assert all([el['user'] == self.student1.pk or
+                    el['user'] == self.student2.pk for el in resp.data]), \
                     'Resultado contém respostas de outro aluno!'
-    
+
     def test_instructor_lists_all_answers_from_student(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2')
         force_authenticate(req_list, self.instructor)
 
         view = AnswerViewSet.as_view({'get': 'list'})
-        resp = view(req_list, off_pk=1, ex_slug=self.exercise1.slug, student_pk=2)
+        resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug, student_pk=2)
         assert resp.status_code == 200
         assert all([el['pk'] == self.student2.pk for el in resp.data]), \
                     'Pediu respostas de 2, mas resultado contém respostas de outro aluno!'
@@ -415,7 +416,7 @@ class CodeExerciseBackend(TestCase):
             url="bill.doors.com/walls/",
             type=Exercise.ExerciseType.CODE,
         )
-        
+
         self.answer_s1 = Answer.objects.create(
             exercise=self.exercise1,
             user=self.student1,
@@ -430,15 +431,15 @@ class CodeExerciseBackend(TestCase):
             test_results={},
             student_input={}
         )
-    
+
     def test_list_students_that_tried_exercise(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students')
         force_authenticate(req_list, self.instructor)
 
-        resp = list_students_that_tried_exercise(req_list, off_pk=1, ex_slug=self.exercise1.slug)
+        resp = list_students_that_tried_exercise(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 200
-        breakpoint()
-        assert self.student1 in resp.data, 'Student1 não está na resposta, mas submeteu exercícios para o exercício!'
-        assert self.student2 in resp.data, 'Student2 não está na resposta, mas submeteu exercícios para o exercício!'
-        assert not self.student3 in resp.data, 'Student3 está na resposta, mas não submeteu exercícios para o exercício!'
+        response_student_pk = [st['pk'] for st in resp.data]
+        assert self.student1.pk in response_student_pk, 'Student1 não está na resposta, mas submeteu exercícios para o exercício!'
+        assert self.student2.pk in response_student_pk, 'Student2 não está na resposta, mas submeteu exercícios para o exercício!'
+        assert not self.student3.pk in response_student_pk, 'Student3 está na resposta, mas não submeteu exercícios para o exercício!'
