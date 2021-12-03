@@ -63,6 +63,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
+    "http://127.0.0.1:8080",
+    "http://localhost:8080",
     "https://insper.github.io",
 ]
 
@@ -93,12 +95,8 @@ development = bool(int(os.getenv("DEV", "1")))
 if development:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": 'db',
-            "USER": 'postgres',
-            "PASSWORD": 'admin',
-            "HOST": "localhost",
-            "PORT": 5432
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": 'db.sqlite3'
         }
 
     }

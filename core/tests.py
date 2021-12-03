@@ -346,17 +346,16 @@ class AnswerViewSetTestCase(TestCase):
         view = AnswerViewSet.as_view({'get': 'list'})
         resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 200
-        assert all([el['user'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+        assert all([el['user'] == self.student1.pk for el in resp.data]), 'Results include answers from a different student.'
 
-    def test_student_lists_their_own_answers_even_if_asking_for_other_student(self):
+    def test_student_gets_401_if_asking_for_other_student_answers(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2/')
         force_authenticate(req_list, self.student1)
 
-        view = AnswerViewSet.as_view({'get': 'list'})
+        view = AnswerViewSet.as_view({'get': 'list_answers_by_student'})
         resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug, student_pk=2)
-        assert resp.status_code == 200
-        assert all([el['user'] == self.student1.pk for el in resp.data]), 'Resultado contém respostas de outro aluno!'
+        assert resp.status_code == 403
 
     def test_instructor_lists_all_answers(self):
         fac = APIRequestFactory()
@@ -366,20 +365,21 @@ class AnswerViewSetTestCase(TestCase):
         view = AnswerViewSet.as_view({'get': 'list'})
         resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 200
+        assert len(resp.data) == 2, 'Less than 2 answers were returned.'
         assert all([el['user'] == self.student1.pk or
                     el['user'] == self.student2.pk for el in resp.data]), \
-                    'Resultado contém respostas de outro aluno!'
+                    'Results does not contain answers for all students'
 
     def test_instructor_lists_all_answers_from_student(self):
         fac = APIRequestFactory()
         req_list = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/students/2')
         force_authenticate(req_list, self.instructor)
 
-        view = AnswerViewSet.as_view({'get': 'list'})
+        view = AnswerViewSet.as_view({'get': 'list_answers_by_student'})
         resp = view(req_list, off_pk=self.offering.pk, ex_slug=self.exercise1.slug, student_pk=2)
         assert resp.status_code == 200
         assert all([el['pk'] == self.student2.pk for el in resp.data]), \
-                    'Pediu respostas de 2, mas resultado contém respostas de outro aluno!'
+                    "Answers from a student different than student2 were returned."
 
 
 

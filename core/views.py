@@ -1,12 +1,12 @@
 from django import http
-from django.http.response import Http404
+from django.http.response import Http404, HttpResponseForbidden
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
-from .models import Answer, Offering, User, Exercise, UserAnswerSummary,Student
+from .models import Answer, Offering, User, Exercise, UserAnswerSummary
 from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
 from .permissions import IsAdminOrSelf, IsAdminUser, IsEnrolledInOfferingOrIsStaff
 
@@ -55,16 +55,9 @@ class AnswerViewSet(viewsets.ModelViewSet):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
         exercise = get_object_or_404(Exercise, slug=self.kwargs.get('ex_slug'))
 
-        filters = {
-            'exercise': exercise
-        }
+        f = user_filter(self.request)
 
-        if 'student_pk' in self.kwargs and self.request.user.is_staff:
-            filters['user'] = self.kwargs.get('student_pk')
-        elif not self.request.user.is_staff:
-            filters['user'] = self.request.user
-
-        return Answer.objects.filter(**filters)
+        return Answer.objects.filter(exercise=exercise, **f)
 
     def create(self, request, off_pk=None, ex_slug=None):
         get_object_or_404(Offering, pk=off_pk)
@@ -84,6 +77,25 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list_answers_by_student(self, request, off_pk, ex_slug, student_pk):
+        get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+
+        filters = {
+            'exercise': exercise
+        }
+
+        if self.request.user.is_staff:
+            filters['user'] = self.kwargs.get('student_pk')
+        elif self.request.user.pk != int(student_pk):
+            return HttpResponseForbidden()
+
+        answers = Answer.objects.filter(**filters)
+        answers_json = AnswerSerializer(answers, many=True)
+
+        return Response(answers_json.data, status=status.HTTP_200_OK)
+
 
 def user_filter(request):
     user_pk = request.user.pk
@@ -159,7 +171,8 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
 def list_students_that_tried_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
     exercise = get_object_or_404(Exercise, slug=ex_slug)
-    all_students = [ans.user for ans in exercise.answer_set.all().distinct('user')]
+
+    all_students = User.objects.filter(answer__exercise__slug=ex_slug).distinct()
     all_students_json = UserSerializer(all_students, many=True)
 
     return Response(all_students_json.data, status=status.HTTP_200_OK)
