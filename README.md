@@ -27,4 +27,8 @@ Currently available:
 ## Docker
 
     docker build -t devlife-support .
+    # To run locally
+    docker run -p 5432:5432 -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=db postgres:13.0-alpine
+    # For testing
+    docker run -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=test_db postgres:13.0-alpine
     docker run -v $PWD:/app -p 8000:8000 devlife-support

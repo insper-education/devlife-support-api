@@ -1,5 +1,5 @@
 from django import http
-from django.http.response import Http404
+from django.http.response import Http404, HttpResponseForbidden
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
@@ -55,7 +55,9 @@ class AnswerViewSet(viewsets.ModelViewSet):
         get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
         exercise = get_object_or_404(Exercise, slug=self.kwargs.get('ex_slug'))
 
-        return Answer.objects.filter(exercise=exercise)
+        f = user_filter(self.request)
+
+        return Answer.objects.filter(exercise=exercise, **f)
 
     def create(self, request, off_pk=None, ex_slug=None):
         get_object_or_404(Offering, pk=off_pk)
@@ -75,6 +77,24 @@ class AnswerViewSet(viewsets.ModelViewSet):
             return Response(answer.data, status=status.HTTP_201_CREATED)
 
         return Response(answer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list_answers_by_student(self, request, off_pk, ex_slug, student_pk):
+        get_object_or_404(Offering, pk=off_pk)
+        exercise = get_object_or_404(Exercise, slug=ex_slug)
+
+        filters = {
+            'exercise': exercise
+        }
+
+        if self.request.user.is_staff:
+            filters['user'] = self.kwargs.get('student_pk')
+        elif self.request.user.pk != int(student_pk):
+            return HttpResponseForbidden()
+
+        answers = Answer.objects.filter(**filters)
+        answers_json = AnswerSerializer(answers, many=True)
+
+        return Response(answers_json.data, status=status.HTTP_200_OK)
 
 
 def user_filter(request):
@@ -145,3 +165,14 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
     all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
 
     return Response(all_summaries_json.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def list_students_that_tried_exercise(request, off_pk, ex_slug):
+    get_object_or_404(Offering, pk=off_pk)
+    exercise = get_object_or_404(Exercise, slug=ex_slug)
+
+    all_students = User.objects.filter(answer__exercise__slug=ex_slug).distinct()
+    all_students_json = UserSerializer(all_students, many=True)
+
+    return Response(all_students_json.data, status=status.HTTP_200_OK)
