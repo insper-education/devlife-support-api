@@ -77,6 +77,7 @@ class Exercise(models.Model):
         QUIZ = 'QUIZ', 'Quiz'
         TEXT = 'TEXT', 'Text'
         CSS = 'CSS', 'CSS'
+        SELF_ASSESS = 'SELF', 'Self-assess'
 
     type = models.CharField(max_length=4, choices=ExerciseType.choices)
 
