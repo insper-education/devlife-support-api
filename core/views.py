@@ -110,14 +110,14 @@ def user_filter(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsEnrolledInOfferingOrIsStaff, IsAdminOrSelf])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
 def get_latest_answer_by_student(request, off_pk, ex_slug, student_pk):
     get_object_or_404(Offering, pk=off_pk)
     try:
         answer = Answer.objects.filter(user__pk=student_pk,
         exercise__slug=ex_slug).latest('pk')
     except Answer.DoesNotExist:
-        return Response('')
+        raise Http404
     return Response(AnswerSerializer(answer).data)
 
 
