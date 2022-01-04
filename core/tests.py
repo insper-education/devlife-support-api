@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import AnswerViewSet, ExerciseViewSet, list_students_that_tried_exercise ,list_summaries
+from .views import AnswerViewSet, ExerciseViewSet, list_students_that_tried_exercise ,list_summaries, get_latest_answer_by_student
 
 # Include tests from blackboard_utils
 from .blackboard_utils.tests import *
@@ -443,3 +443,78 @@ class CodeExerciseBackend(TestCase):
         assert self.student1.pk in response_student_pk, 'Student1 não está na resposta, mas submeteu exercícios para o exercício!'
         assert self.student2.pk in response_student_pk, 'Student2 não está na resposta, mas submeteu exercícios para o exercício!'
         assert not self.student3.pk in response_student_pk, 'Student3 está na resposta, mas não submeteu exercícios para o exercício!'
+
+
+
+class TestLatestAnswerByStudent(TestCase):
+    def setUp(self) -> None:
+        self.student = Student.objects.create_user(username="john.doe", password="1234")
+        self.course = Course.objects.create(name="Walls OS")
+        self.offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS"
+        )
+        Enrollment.objects.create(
+            student=self.student, offering=self.offering
+        )
+
+        self.exercise1 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+
+        self.exercise2 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-2",
+            url="bill.doors.com/walls/2",
+            type=Exercise.ExerciseType.CODE,
+        )
+        Answer.objects.create(
+            exercise=self.exercise2,
+            user=self.student,
+            points=1,
+            test_results={},
+            student_input={'text': 'answer 1'}
+        )
+
+        self.exercise3 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-3",
+            url="bill.doors.com/walls/3",
+            type=Exercise.ExerciseType.CODE,
+        )
+        for i in range(3):
+            Answer.objects.create(
+                exercise=self.exercise3,
+                user=self.student,
+                points=1,
+                test_results={},
+                student_input={'text': f'answer {i+1}'}
+            )
+
+    def test_student_did_not_answer_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers/latest/{self.student.pk}')
+        force_authenticate(req, self.student)
+
+        resp = get_latest_answer_by_student(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug, student_pk=self.student.pk)
+        assert resp.status_code == 404, 'Estudante nunca enviou resposta mas status é diferente de 404'
+
+    def test_student_answered_one(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise2.slug}/answers/latest/{self.student.pk}')
+        force_authenticate(req, self.student)
+
+        resp = get_latest_answer_by_student(req, off_pk=self.offering.pk, ex_slug=self.exercise2.slug, student_pk=self.student.pk)
+        assert resp.status_code == 200, 'Estudante enviou resposta mas status é diferente de 200'
+        assert resp.data['student_input']['text'] == 'answer 1'
+
+    def test_student_answered_3_times(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise3.slug}/answers/latest/{self.student.pk}')
+        force_authenticate(req, self.student)
+
+        resp = get_latest_answer_by_student(req, off_pk=self.offering.pk, ex_slug=self.exercise3.slug, student_pk=self.student.pk)
+        assert resp.status_code == 200, 'Estudante enviou resposta mas status é diferente de 200'
+        assert resp.data['student_input']['text'] == 'answer 3'

@@ -111,6 +111,18 @@ def user_filter(request):
 
 @api_view(['GET'])
 @permission_classes([IsEnrolledInOfferingOrIsStaff])
+def get_latest_answer_by_student(request, off_pk, ex_slug, student_pk):
+    get_object_or_404(Offering, pk=off_pk)
+    try:
+        answer = Answer.objects.filter(user__pk=student_pk,
+        exercise__slug=ex_slug).latest('pk')
+    except Answer.DoesNotExist:
+        raise Http404
+    return Response(AnswerSerializer(answer).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsEnrolledInOfferingOrIsStaff])
 def get_previous_answer(request, off_pk, ex_slug, ans_pk):
     get_object_or_404(Offering, pk=off_pk)
 
@@ -147,7 +159,7 @@ def list_summaries(request, off_pk):
     get_object_or_404(Offering, pk=off_pk)
 
     filters = user_filter(request)
-    all_summaries = UserAnswerSummary.objects.filter(**filters)
+    all_summaries = UserAnswerSummary.objects.filter(**filters).prefetch_related('exercise')
     all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
 
     return Response(all_summaries_json.data, status=status.HTTP_200_OK)
@@ -161,7 +173,7 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
 
     filters = user_filter(request)
     filters['exercise'] = exercise
-    all_summaries = UserAnswerSummary.objects.filter(**filters)
+    all_summaries = UserAnswerSummary.objects.filter(**filters).prefetch_related('exercise')
     all_summaries_json = UserAnswerSummarySerializer(all_summaries, many=True)
 
     return Response(all_summaries_json.data, status=status.HTTP_200_OK)
