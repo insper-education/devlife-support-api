@@ -31,12 +31,16 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class UserAnswerSummarySerializer(serializers.ModelSerializer):
     exercise_slug = serializers.SerializerMethodField()
+    exercise_type = serializers.SerializerMethodField()
 
     def get_exercise_slug(self, obj):
         return obj.exercise.slug
+
+    def get_exercise_type(self, obj):
+        return obj.exercise.type
     class Meta:
         model = UserAnswerSummary
-        fields = ["pk", "user", "exercise", "exercise_slug", "max_points", "answer_count", "latest"]
+        fields = ["pk", "user", "exercise", "exercise_slug", "exercise_type", "max_points", "answer_count", "latest"]
 
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):
