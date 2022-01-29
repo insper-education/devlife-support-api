@@ -242,11 +242,11 @@ class PasswordResetEmailTestCase(APITestCase):
         self.assertEqual(email.subject, expected_subject)
         self.assertEqual(email.from_email, settings.DEFAULT_FROM_EMAIL)
         self.assertListEqual(email.to, [user.email])
-        self.assertIn("/password-reset/", email.body)
+        self.assertIn("/password-reset", email.body)
         if first_time:
-            self.assertIn("?first=true", email.body)
+            self.assertIn("&first=true", email.body)
         else:
-            self.assertNotIn("?first=true", email.body)
+            self.assertNotIn("&first=true", email.body)
 
     def test_send_password_reset_email_api_endpoint(self):
         user = self.create_student()
