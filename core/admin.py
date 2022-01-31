@@ -27,6 +27,7 @@ class OfferingAdmin(ModelAdmin):
     fieldsets = ((None, {
         'fields': (
             'course',
+            'url',
             'description',
         )
     }), ('Blackboard student list', {

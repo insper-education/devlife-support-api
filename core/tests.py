@@ -227,6 +227,28 @@ class StudentAndInstructorTests(TestCase):
 
 
 class PasswordResetEmailTestCase(APITestCase):
+    def setUp(self):
+        self.course = Course.objects.create(name='Engineer Life')
+        self.offering_url = 'https://engineer.life.com/'
+        self.offering_with_url = Offering.objects.create(
+            course=self.course,
+            description='Offering with url',
+            url=self.offering_url,
+        )
+        self.offering_without_url = Offering.objects.create(
+            course=self.course,
+            description='Offering without url',
+        )
+        self.another_url = 'https://engineer.life.com/2030/'
+        self.another_offering_with_url = Offering.objects.create(
+            course=self.course,
+            description='Another offering with url',
+            url=self.another_url,
+        )
+
+    def enroll(self, student, offering):
+        Enrollment.objects.create(student=student, offering=offering)
+
     def create_student(self, with_email=True):
         kwargs = {
             "first_name": "Leeroy",
@@ -238,11 +260,11 @@ class PasswordResetEmailTestCase(APITestCase):
             kwargs["email"] = "leeroyj@al.insper.edu.br"
         return Student.objects.create_user(**kwargs)
 
-    def assert_reset_email(self, email, expected_subject, user, first_time):
+    def assert_reset_email(self, email, expected_subject, client_url, user, first_time):
         self.assertEqual(email.subject, expected_subject)
         self.assertEqual(email.from_email, settings.DEFAULT_FROM_EMAIL)
         self.assertListEqual(email.to, [user.email])
-        self.assertIn("/password-reset", email.body)
+        self.assertIn(f"{client_url}password-reset", email.body)
         if first_time:
             self.assertIn("&first=true", email.body)
         else:
@@ -253,13 +275,13 @@ class PasswordResetEmailTestCase(APITestCase):
         mail.outbox = []  # Creating a user triggers a password reset email
 
         response = self.client.post(
-            "/api/auth/password/reset/?first_time=true",
+            f"/api/auth/password/reset/?offering={self.offering_with_url.id}&first_time=true",
             {"email": user.email},
             format="json",
         )
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post("/api/auth/password/reset/", {"email": user.email})
+        response = self.client.post(f"/api/auth/password/reset/?offering={self.offering_with_url.id}", {"email": user.email})
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(len(mail.outbox), 2)
@@ -269,30 +291,65 @@ class PasswordResetEmailTestCase(APITestCase):
             (_("[DevLife] Password reset"), False),
         ]
         for (expected_subject, first_time), email in zip(expected_emails, mail.outbox):
-            self.assert_reset_email(email, expected_subject, user, first_time)
+            self.assert_reset_email(
+                email,
+                expected_subject,
+                self.offering_url,
+                user,
+                first_time,
+            )
 
-    def test_send_password_reset_email_when_user_is_created(self):
+    def test_send_password_reset_email_when_user_is_enrolled_in_offering_with_url(self):
         user = self.create_student()
+        self.enroll(user, self.offering_with_url)
+        self.enroll(user, self.another_offering_with_url)
 
-        user.name = "Leeeeeroy"
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assert_reset_email(
+            email,
+            _("[DevLife] Set password"),
+            self.offering_url,
+            user,
+            True,
+        )
+
+    def test_doesnt_send_password_reset_email_when_already_sent_before(self):
+        user = self.create_student()
+        user.password_email_sent = True
         user.save()
+        self.enroll(user, self.offering_with_url)
 
-        user.password_email_sent = False
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_doesnt_send_password_reset_email_when_user_is_enrolled_in_offering_without_url(self):
+        user = self.create_student()
+        self.enroll(user, self.offering_without_url)
+
+        user.password_email_sent = True
         user.save()
+        self.enroll(user, self.offering_with_url)
 
-        self.assertEqual(len(mail.outbox), 2)
-        for email in mail.outbox:
-            self.assert_reset_email(email, _("[DevLife] Set password"), user, True)
+        self.assertEqual(len(mail.outbox), 0)
 
-    def test_send_password_reset_email_when_user_receives_email(self):
+    def test_send_password_reset_email_when_user_adds_email_and_is_enrolled_again(self):
         user = self.create_student(with_email=False)
+        self.enroll(user, self.offering_with_url)
+        self.assertEqual(len(mail.outbox), 0)
 
         user.email = "leeroyj@al.insper.edu.br"
         user.save()
+        self.enroll(user, self.another_offering_with_url)
 
         self.assertEqual(len(mail.outbox), 1)
-        for email in mail.outbox:
-            self.assert_reset_email(email, _("[DevLife] Set password"), user, True)
+        email = mail.outbox[0]
+        self.assert_reset_email(
+            email,
+            _("[DevLife] Set password"),
+            self.another_url,
+            user,
+            True,
+        )
 
 
 class AnswerViewSetTestCase(TestCase):

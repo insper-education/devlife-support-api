@@ -47,6 +47,7 @@ class Course(models.Model):
 class Offering(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.TextField()
+    url = models.URLField(blank=True)
 
     def __str__(self) -> str:
         return self.course.name + self.description
