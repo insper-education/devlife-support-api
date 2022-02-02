@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from dj_rest_auth.serializers import PasswordResetSerializer
-from .models import Answer, User, Exercise, UserAnswerSummary
+from .models import Answer, Offering, User, Exercise, UserAnswerSummary
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,11 +46,21 @@ class UserAnswerSummarySerializer(serializers.ModelSerializer):
 class CustomPasswordResetSerializer(PasswordResetSerializer):
     def get_email_options(self):
         request = self.context.get("request")
+
+        client_url = None
         first_time = False
         if request:
             first_time = request.GET.get("first_time", False)
+            offering_id = request.GET.get("offering")
+            if offering_id:
+                offering = Offering.objects.get(pk=int(offering_id))
+                client_url = offering.url
+        assert client_url, 'offering url param is required'
         return {
             "email_template_name": "registration/password_reset_email.txt",
             "subject_template_name": "registration/password_reset_subject.txt",
-            "extra_email_context": {"first_time": first_time},
+            "extra_email_context": {
+                "first_time": first_time,
+                "client_url": client_url,
+            },
         }

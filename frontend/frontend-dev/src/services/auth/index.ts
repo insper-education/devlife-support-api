@@ -30,7 +30,10 @@ export const login = async (
         })
         .catch(() => null);
     })
-    .catch(() => null);
+    .catch((e) => {
+      console.error(e);
+      return null;
+    });
 };
 
 export const resetPassword = async (

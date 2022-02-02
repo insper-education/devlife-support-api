@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.db.models import Max
 from dj_rest_auth.views import PasswordResetView
 from django.test.client import RequestFactory
-from .models import Answer, Instructor, UserAnswerSummary, Student, User
+from .models import Answer, Enrollment, Instructor, UserAnswerSummary, Student, User
 from rest_framework.authtoken.models import Token
 
 
@@ -42,15 +42,22 @@ def post_answer_delete(sender, instance, using, **kwargs):
 def post_save_user_create_token(sender, instance, created, *args, **kwargs):
     if created:
         Token.objects.create(user=instance)
-    if not instance.password_email_sent:
+
+
+@receiver(post_save, sender=Enrollment, dispatch_uid='51349841263013489')
+def post_save_enrollment_send_email(sender, instance, created, *args, **kwargs):
+    offering = instance.offering
+    client_url = offering.url
+    student = instance.student
+    if not student.password_email_sent and client_url:
         factory = RequestFactory()
         request = factory.post(
-            "/api/auth/password/reset/?first_time=true",
-            data={"email": instance.email},
+            f"/api/auth/password/reset/?offering={offering.id}&first_time=true",
+            data={"email": student.email},
             content_type="application/json",
         )
         view = PasswordResetView.as_view()
         response = view(request)
         if response.status_code == 200:
-            instance.password_email_sent = True
-            instance.save()
+            student.password_email_sent = True
+            student.save()
