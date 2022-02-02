@@ -45,7 +45,7 @@ def post_save_user_create_token(sender, instance, created, *args, **kwargs):
 
 
 @receiver(post_save, sender=Enrollment, dispatch_uid='51349841263013489')
-def post_save_user_create_token(sender, instance, created, *args, **kwargs):
+def post_save_enrollment_send_email(sender, instance, created, *args, **kwargs):
     offering = instance.offering
     client_url = offering.url
     student = instance.student
