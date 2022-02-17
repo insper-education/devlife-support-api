@@ -111,3 +111,6 @@ class UserAnswerSummary(models.Model):
                 fields=["user", "exercise"], name="unique_user_exercise_summary"
             ),
         ]
+
+    def __str__(self) -> str:
+        return f'{self.user} -> {self.exercise} (pts: {self.max_points}, count: {self.answer_count})'
