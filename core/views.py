@@ -62,6 +62,8 @@ class AnswerViewSet(viewsets.ModelViewSet):
     def create(self, request, off_pk=None, ex_slug=None):
         get_object_or_404(Offering, pk=off_pk)
         exercise = get_object_or_404(Exercise, slug=ex_slug)
+        if not exercise.allow_submissions:
+            return HttpResponseForbidden()
 
         answer_data = {
             'user': request.user.pk,
@@ -188,3 +190,24 @@ def list_students_that_tried_exercise(request, off_pk, ex_slug):
     all_students_json = UserSerializer(all_students, many=True)
 
     return Response(all_students_json.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def activate_exercise(request, off_pk, ex_slug):
+    get_object_or_404(Offering, pk=off_pk)
+    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise.allow_submissions = True
+    exercise.save()
+    return Response('OK', status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def deactivate_exercise(request, off_pk, ex_slug):
+    get_object_or_404(Offering, pk=off_pk)
+    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise.allow_submissions = False
+    exercise.save()
+    return Response('OK', status=status.HTTP_200_OK)
+    
