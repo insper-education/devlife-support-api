@@ -6,8 +6,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 
 from django.shortcuts import get_object_or_404
 
-from .models import Answer, Offering, User, Exercise, UserAnswerSummary
-from .serializers import AnswerSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
+from .models import Answer, Enrollment, Offering, User, Exercise, UserAnswerSummary
+from .serializers import AnswerSerializer, OfferingSerializer, UserAnswerSummarySerializer, UserSerializer, ExerciseSerializer
 from .permissions import IsAdminOrSelf, IsAdminUser, IsEnrolledInOfferingOrIsStaff
 
 
@@ -15,6 +15,19 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrSelf]
+
+
+class OfferingViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Offering.objects.all()
+    serializer_class = OfferingSerializer
+    permission_classes = [IsAdminUser]
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_enrolled_students(request, off_pk):
+    students = User.objects.filter(enrollment__offering_id=off_pk)
+    return Response(UserSerializer(students, many=True).data)
 
 
 class ExerciseViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):

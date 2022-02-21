@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import AnswerViewSet, ExerciseViewSet, activate_exercise, deactivate_exercise, list_students_that_tried_exercise ,list_summaries, get_latest_answer_by_student
+from .views import AnswerViewSet, ExerciseViewSet, activate_exercise, deactivate_exercise, get_enrolled_students, list_students_that_tried_exercise ,list_summaries, get_latest_answer_by_student
 
 # Include tests from blackboard_utils
 from .blackboard_utils.tests import *
@@ -696,3 +696,75 @@ class TestActivateDeactivateExercise(TestCase):
 
         resp = activate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
         assert resp.status_code == 403
+
+
+class EnrollmentTests(TestCase):
+    def setUp(self):
+        self.instructor = Instructor.objects.create_user(
+            username='Mr.Jin',
+            password='271828'
+        )
+        self.student_enrolled = Student.objects.create_user(
+            username="john.doe",
+            password="182845"
+        )
+        self.student_not_enrolled = Student.objects.create_user(
+            username="mark.pollo",
+            password="904523"
+        )
+        self.student_enrolled_in_other_offering = Student.objects.create_user(
+            username="steven.works",
+            password="536028"
+        )
+        self.student_enrolled_in_both = Student.objects.create_user(
+            username="steve.oz",
+            password="747135"
+        )
+
+        self.course = Course.objects.create(name="Walls OS")
+        self.old_offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS (old)"
+        )
+        self.offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS"
+        )
+
+        Enrollment.objects.create(
+            student=self.student_enrolled, offering=self.offering
+        )
+        Enrollment.objects.create(
+            student=self.student_enrolled_in_other_offering, offering=self.old_offering
+        )
+        Enrollment.objects.create(
+            student=self.student_enrolled_in_both, offering=self.offering
+        )
+        Enrollment.objects.create(
+            student=self.student_enrolled_in_both, offering=self.old_offering
+        )
+
+    def test_list_enrolled_students_by_student(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/students/')
+        force_authenticate(req, self.student_enrolled)
+
+        resp = get_enrolled_students(req, off_pk=self.offering.pk)
+        assert resp.status_code == 403, "Student shouldn't have access to enrolled students list"
+
+    def test_list_enrolled_students_by_instructor(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/students/')
+        force_authenticate(req, self.instructor)
+
+        resp = get_enrolled_students(req, off_pk=self.offering.pk)
+        assert resp.status_code == 200, "Instructor doesn't have access to enrolled students list"
+
+        enrolled_students = resp.data
+        assert len(enrolled_students) == 2, "There should be exactly 2 students enrolled"
+
+        enrolled_usernames = [s['username'] for s in enrolled_students]
+        expected_usernames = [
+            self.student_enrolled.username,
+            self.student_enrolled_in_both.username,
+        ]
+        for expected in expected_usernames:
+            assert expected in enrolled_usernames, f"{expected} should be enrolled"
