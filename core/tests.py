@@ -415,7 +415,7 @@ class AnswerViewSetTestCase(TestCase):
         resp = view(req_list, off_pk = self.offering.pk, ex_slug=self.exercise2.slug)
         assert resp.status_code == 201
         assert len(Answer.objects.filter(user=self.student1, exercise=self.exercise2)) == 1
-    
+
     def test_student_submits_answer_submission_not_allowed(self):
         fac = APIRequestFactory()
         req_list = fac.post(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers', data={
@@ -645,7 +645,6 @@ class TestActivateDeactivateExercise(TestCase):
             type=Exercise.ExerciseType.CODE,
             allow_submissions=False
         )
-    
 
     def test_activate_already_activated_exercise(self):
         fac = APIRequestFactory()
@@ -686,3 +685,14 @@ class TestActivateDeactivateExercise(TestCase):
         assert resp.status_code == 200
         ex =  Exercise.objects.get(id=self.exercise1.pk)
         assert ex.allow_submissions == False
+
+    def test_student_does_not_activate_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/deactivate/')
+        force_authenticate(req, self.student)
+
+        resp = deactivate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 403
+
+        resp = activate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 403
