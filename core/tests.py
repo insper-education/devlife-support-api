@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 from rest_framework.authtoken.models import Token
 
-from .views import AnswerViewSet, ExerciseViewSet, list_students_that_tried_exercise ,list_summaries, get_latest_answer_by_student
+from .views import AnswerViewSet, ExerciseViewSet, activate_exercise, deactivate_exercise, list_students_that_tried_exercise ,list_summaries, get_latest_answer_by_student
 
 # Include tests from blackboard_utils
 from .blackboard_utils.tests import *
@@ -380,6 +380,13 @@ class AnswerViewSetTestCase(TestCase):
             type=Exercise.ExerciseType.CODE,
         )
 
+        self.exercise2 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-2",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+
         self.answer_s1 = Answer.objects.create(
             exercise=self.exercise1,
             user=self.student1,
@@ -394,6 +401,37 @@ class AnswerViewSetTestCase(TestCase):
             test_results={},
             student_input={}
         )
+
+    def test_student_submits_answer(self):
+        fac = APIRequestFactory()
+        req_list = fac.post(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers', data={
+            'test_results': '\"sdflkjsdflsd\"',
+            'student_input': '\"sdfhjsk\"',
+            'points':  1.0
+        })
+        force_authenticate(req_list, self.student1)
+
+        view = AnswerViewSet.as_view({'post': 'create'})
+        resp = view(req_list, off_pk = self.offering.pk, ex_slug=self.exercise2.slug)
+        assert resp.status_code == 201
+        assert len(Answer.objects.filter(user=self.student1, exercise=self.exercise2)) == 1
+
+    def test_student_submits_answer_submission_not_allowed(self):
+        fac = APIRequestFactory()
+        req_list = fac.post(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/answers', data={
+            'test_results': '\"sdflkjsdflsd\"',
+            'student_input': '\"sdfhjsk\"',
+            'points':  1.0
+        })
+        force_authenticate(req_list, self.student1)
+
+        self.exercise2.allow_submissions = False
+        self.exercise2.save()
+
+        view = AnswerViewSet.as_view({'post': 'create'})
+        resp = view(req_list, off_pk = self.offering.pk, ex_slug=self.exercise2.slug)
+        assert resp.status_code == 403
+        assert len(Answer.objects.filter(user=self.student1, exercise=self.exercise2)) == 0
 
     def test_student_lists_their_own_answers(self):
         fac = APIRequestFactory()
@@ -575,3 +613,86 @@ class TestLatestAnswerByStudent(TestCase):
         resp = get_latest_answer_by_student(req, off_pk=self.offering.pk, ex_slug=self.exercise3.slug, student_pk=self.student.pk)
         assert resp.status_code == 200, 'Estudante enviou resposta mas status é diferente de 200'
         assert resp.data['student_input']['text'] == 'answer 3'
+
+
+class TestActivateDeactivateExercise(TestCase):
+    def setUp(self):
+        self.student = Student.objects.create_user(username="john.doe", password="1234")
+        self.instructor = Instructor.objects.create_user(
+            username="bill.doors", password="4567"
+        )
+        self.course = Course.objects.create(name="Walls OS")
+        self.offering = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS"
+        )
+        self.enrollment = Enrollment.objects.create(
+            student=self.student, offering=self.offering
+        )
+        self.teaches = Teaches.objects.create(
+            instructor=self.instructor, offering=self.offering
+        )
+        self.exercise1 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+
+        self.exercise2 = Exercise.objects.create(
+            offering=self.offering,
+            slug="walls-exercise-2",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+            allow_submissions=False
+        )
+
+    def test_activate_already_activated_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/activate/')
+        force_authenticate(req, self.instructor)
+
+        resp = activate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 200
+        ex =  Exercise.objects.get(id=self.exercise1.pk)
+        assert ex.allow_submissions == True
+
+    def test_deactivate_already_deactivated_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise2.slug}/activate/')
+        force_authenticate(req, self.instructor)
+
+        resp = deactivate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise2.slug)
+        assert resp.status_code == 200
+        ex =  Exercise.objects.get(id=self.exercise2.pk)
+        assert ex.allow_submissions == False
+
+    def test_activate_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise2.slug}/activate/')
+        force_authenticate(req, self.instructor)
+
+        resp = activate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise2.slug)
+        assert resp.status_code == 200
+        ex =  Exercise.objects.get(id=self.exercise2.pk)
+        assert ex.allow_submissions == True
+
+    def test_deactivate_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/deactivate/')
+        force_authenticate(req, self.instructor)
+
+        resp = deactivate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 200
+        ex =  Exercise.objects.get(id=self.exercise1.pk)
+        assert ex.allow_submissions == False
+
+    def test_student_does_not_activate_exercise(self):
+        fac = APIRequestFactory()
+        req = fac.get(f'offerings/{self.offering.pk}/exercises/{self.exercise1.slug}/deactivate/')
+        force_authenticate(req, self.student)
+
+        resp = deactivate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 403
+
+        resp = activate_exercise(req, off_pk=self.offering.pk, ex_slug=self.exercise1.slug)
+        assert resp.status_code == 403
