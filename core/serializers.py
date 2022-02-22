@@ -9,6 +9,17 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["pk", "username", "first_name", "last_name", "email", "is_staff"]
 
 
+class OfferingSerializer(serializers.ModelSerializer):
+    course_name = serializers.SerializerMethodField()
+
+    def get_course_name(self, obj):
+        return obj.course.name
+
+    class Meta:
+        model = Offering
+        fields = ["pk", "course_name", "description", "url"]
+
+
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise
