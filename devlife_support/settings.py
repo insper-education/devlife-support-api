@@ -68,6 +68,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://insper.github.io",
 ]
 
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^http:\/\/devlife-.*\.s3-website-.*\.amazonaws\.com$'
+]
+
 ROOT_URLCONF = "devlife_support.urls"
 
 TEMPLATES = [
