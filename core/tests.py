@@ -364,6 +364,9 @@ class AnswerViewSetTestCase(TestCase):
         self.offering = Offering.objects.create(
             course=self.course, description="Introduction to Walls OS"
         )
+        self.offering2 = Offering.objects.create(
+            course=self.course, description="Introduction to Walls OS (II)"
+        )
         Enrollment.objects.create(
             student=self.student1, offering=self.offering
         )
@@ -375,6 +378,12 @@ class AnswerViewSetTestCase(TestCase):
         )
         self.exercise1 = Exercise.objects.create(
             offering=self.offering,
+            slug="walls-exercise-1",
+            url="bill.doors.com/walls/",
+            type=Exercise.ExerciseType.CODE,
+        )
+        self.exercise1_copy = Exercise.objects.create(
+            offering=self.offering2,
             slug="walls-exercise-1",
             url="bill.doors.com/walls/",
             type=Exercise.ExerciseType.CODE,

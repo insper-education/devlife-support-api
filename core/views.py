@@ -65,8 +65,9 @@ class AnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsEnrolledInOfferingOrIsStaff]
 
     def get_queryset(self):
-        get_object_or_404(Offering, pk=self.kwargs.get('off_pk'))
-        exercise = get_object_or_404(Exercise, slug=self.kwargs.get('ex_slug'))
+        offering_pk = self.kwargs.get('off_pk')
+        get_object_or_404(Offering, pk=offering_pk)
+        exercise = get_object_or_404(Exercise, offering=offering_pk, slug=self.kwargs.get('ex_slug'))
 
         f = user_filter(self.request)
 
@@ -74,7 +75,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
     def create(self, request, off_pk=None, ex_slug=None):
         get_object_or_404(Offering, pk=off_pk)
-        exercise = get_object_or_404(Exercise, slug=ex_slug)
+        exercise = get_object_or_404(Exercise, slug=ex_slug, offering=off_pk)
         if not exercise.allow_submissions:
             return HttpResponseForbidden()
 
@@ -95,7 +96,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
     def list_answers_by_student(self, request, off_pk, ex_slug, student_pk):
         get_object_or_404(Offering, pk=off_pk)
-        exercise = get_object_or_404(Exercise, slug=ex_slug)
+        exercise = get_object_or_404(Exercise, offering=off_pk, slug=ex_slug)
 
         filters = {
             'exercise': exercise
@@ -192,7 +193,7 @@ def list_summaries(request, off_pk):
 @permission_classes([IsEnrolledInOfferingOrIsStaff])
 def list_summaries_for_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
-    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise = get_object_or_404(Exercise, offering=off_pk, slug=ex_slug)
 
     filters = user_filter(request)
     filters['exercise'] = exercise
@@ -205,7 +206,7 @@ def list_summaries_for_exercise(request, off_pk, ex_slug):
 @permission_classes([IsAdminUser])
 def list_students_that_tried_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
-    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise = get_object_or_404(Exercise, offering=off_pk, slug=ex_slug)
 
     all_students = User.objects.filter(answer__exercise__slug=ex_slug).distinct()
     all_students_json = UserSerializer(all_students, many=True)
@@ -217,7 +218,7 @@ def list_students_that_tried_exercise(request, off_pk, ex_slug):
 @permission_classes([IsAdminUser])
 def activate_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
-    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise = get_object_or_404(Exercise, offering=off_pk, slug=ex_slug)
     exercise.allow_submissions = True
     exercise.save()
     return Response('OK', status=status.HTTP_200_OK)
@@ -227,7 +228,7 @@ def activate_exercise(request, off_pk, ex_slug):
 @permission_classes([IsAdminUser])
 def deactivate_exercise(request, off_pk, ex_slug):
     get_object_or_404(Offering, pk=off_pk)
-    exercise = get_object_or_404(Exercise, slug=ex_slug)
+    exercise = get_object_or_404(Exercise, offering=off_pk, slug=ex_slug)
     exercise.allow_submissions = False
     exercise.save()
     return Response('OK', status=status.HTTP_200_OK)
