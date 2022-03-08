@@ -39,21 +39,25 @@ msgid ""
 "email address. Click the link below to initiate the password reset process."
 msgstr "Recebemos um pedido de redefinição de senha para a conta cadastrada neste e-mail. Clique no link abaixo para redefinir sua senha."
 
-#: core/templates/registration/password_reset_email.txt:13
+#: core/templates/registration/password_reset_email.txt:11
 msgid ""
 "This link can only be used once. If you need to reset your password again, "
 "please request another reset."
 msgstr "Este link pode ser utilizado apenas uma vez. Se você precisar redefinir sua senha novamente, por favor, faça uma nova solicitação."
 
 #: core/templates/registration/password_reset_email.txt:15
+msgid "Your username:"
+msgstr "Seu usuário:"
+
+#: core/templates/registration/password_reset_email.txt:17
 msgid "If you did not make this request, you can simply ignore this email."
 msgstr "Caso você não tenha feito este pedido, por favor, ignore este e-mail."
 
-#: core/templates/registration/password_reset_email.txt:17
+#: core/templates/registration/password_reset_email.txt:19
 msgid "Sincerely,"
 msgstr "Atenciosamente,"
 
-#: core/templates/registration/password_reset_email.txt:18
+#: core/templates/registration/password_reset_email.txt:20
 msgid "Developer Life Team"
 msgstr "Equipe Developer Life"
 
