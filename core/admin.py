@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.admin import ModelAdmin
-from django.forms import ModelForm, FileField
+from django.forms import BooleanField, ModelForm, FileField
+from core.repository_manager import clone_repository, update_repository
 
 from core.shortcuts import enroll_students, get_or_create_student_list
 
@@ -18,6 +19,7 @@ class UserAdmin(BaseUserAdmin):
 
 class OfferingForm(ModelForm):
     blackboard_file = FileField(required=False)
+    update_repository = BooleanField(label='Atualizar repositório', required=False)
 
     class Meta:
         model = Offering
@@ -30,7 +32,11 @@ class OfferingAdmin(ModelAdmin):
             'url',
             'description',
         )
-    }), ('Blackboard student list', {
+    }),
+     ('Repository settings', {
+        'fields': ('repo_url', 'repo_user', 'repo_token', 'repo_status', 'update_repository')
+     }),
+     ('Blackboard student list', {
         'fields': ('blackboard_file', )
     }))
 
@@ -45,6 +51,9 @@ class OfferingAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         self.enroll(form.cleaned_data.get('blackboard_file'), obj)
+        if obj.repo_status == Offering.RepoStatus.READY and form.cleaned_data.get('update_repository'):
+            update_repository(obj)
+        clone_repository(obj)
 
 
 admin.site.register(Course)
