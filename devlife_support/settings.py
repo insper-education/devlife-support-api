@@ -158,6 +158,10 @@ STATICFILES_DIRS = [
     "frontend/frontend-dev/build/",
 ]
 
+# REPOSITORY dir
+# This should point to a writable and persistent folder in the FS
+REPOSITORY_ROOT = BASE_DIR / 'repositories'
+
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils import timezone
-
+from django.conf import settings
 
 class User(AbstractUser):
     password_email_sent = models.BooleanField(default=False)
@@ -49,8 +49,25 @@ class Offering(models.Model):
     description = models.TextField()
     url = models.URLField(blank=True)
 
+    class RepoStatus(models.IntegerChoices):
+        EMPTY = 0, 'EMPTY'
+        CLONING = 1, 'CLONING'
+        READY = 2, 'READY'
+        UPDATING = 3, 'UPDATING'
+        ERROR = 4, 'ERROR'
+
+    repo_url = models.URLField(blank=True)
+    repo_user = models.CharField("Usuário", blank=True, max_length=30, default='')
+    repo_token = models.CharField("Token", blank=True, max_length=100, default='')
+    repo_status = models.IntegerField(choices=RepoStatus.choices, default=0)
+    repo_last_git_output = models.TextField(default='')
+
     def __str__(self) -> str:
         return self.course.name + self.description
+    
+    @property
+    def filesystem_path(self):
+        return settings.REPOSITORY_ROOT / str(self.id)
 
 
 class Enrollment(models.Model):
@@ -58,7 +75,7 @@ class Enrollment(models.Model):
     offering = models.ForeignKey(Offering, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'{self.student} [{self.offering}]'
+       return f'{self.student} [{self.offering}]'
 
 
 class Teaches(models.Model):
